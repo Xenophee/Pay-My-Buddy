@@ -1,0 +1,141 @@
+<th:block layout:decorate="~{layouts/main-layout}">
+
+	<th:block layout:fragment="content">
+		<div th:replace="~{fragments/header :: header}"></div>
+
+		<main class="bg-[url('/images/pattern-orange.png')] py-10 px-4 md:px-16 xl:px-32">
+			<div class="min-h-screen-minus-header backdrop-blur-sm bg-zinc-50 border border-orange-500/5 p-5 md:p-16">
+				<h1 class="text-center font-bold text-orange-500 text-2xl uppercase border-b border-orange-500/40 p-5 mb-16">Transactions</h1>
+
+				<section>
+
+					<!-- Success Message -->
+					<div th:if="${successMessage}" class="text-green-500">
+						<p class="text-wrap" th:text="${successMessage}"></p>
+					</div>
+
+					<!-- Error Message -->
+					<div th:if="${errorMessage}" class="text-red-500">
+						<p class="text-wrap" th:text="${errorMessage}"></p>
+					</div>
+
+					<div class="flex flex-col lg:flex-row justify-between w-full">
+						<div class="flex items-center justify-center border-pink-500/50 border rounded-2xl md:text-nowrap p-10 mb-10 lg:mb-0 lg:me-5">
+							Solde du compte : <span class="text-pink-500 font-bold ms-2" th:text="${balance}"></span>
+						</div>
+
+						<form th:action="@{/transactions}" th:object="${Transaction}" method="post"  class="flex flex-col flex-wrap sm:flex-row justify-center lg:justify-end items-center w-full gap-10">
+
+							<div class="w-full md:w-64 xl:w-72 2xl:w-80">
+								<label for="receiver" class="block text-sm text-zinc-200">
+									<select
+										name="receiver"
+										id="receiver"
+										th:field="*{receiver}"
+										th:value="*{receiver}"
+										th:attr="aria-invalid=${#fields.hasErrors('receiver')}"
+										class="w-full rounded-lg border-zinc-200 text-zinc-700 focus:border-sky-500 focus:ring-sky-500 sm:text-sm shadow-sm p-3 pe-12"
+									>
+										<option value="">Sélectionner une relation</option>
+										<option th:each="relationship : ${relationships}" th:value="${relationship.id}" th:text="${relationship.username}"></option>
+									</select>
+								</label>
+
+								<small
+									th:if="${#fields.hasErrors('receiver')}"
+									th:errorclass="text-red-500"
+									th:errors="*{receiver}">
+								</small>
+							</div>
+
+							<div class="w-full md:w-64 xl:w-72 2xl:w-80">
+								<label for="description"></label>
+								<input
+									type="text"
+									id="description"
+									name="description"
+									th:field="*{description}"
+									th:value="*{description}"
+									th:attr="aria-invalid=${#fields.hasErrors('description')}"
+									class="w-full rounded-lg border-zinc-200 focus:border-sky-500 focus:ring-sky-500 p-3 pe-12 text-sm shadow-sm"
+									placeholder="Description"
+								/>
+
+								<small
+									th:if="${#fields.hasErrors('description')}"
+									th:errorclass="text-red-500"
+									th:errors="*{description}">
+								</small>
+							</div>
+
+							<div>
+								<label for="amount" class="sr-only"> Amount </label>
+
+								<div class="flex items-center rounded border border-zinc-200">
+									<button type="button" class="size-10 leading-10 text-zinc-600 transition hover:opacity-75 px-6">
+										&minus;
+									</button>
+
+									<input
+										type="number"
+										id="amount"
+										name="amount"
+										th:field="*{amount}"
+										th:value="*{amount}"
+										th:attr="aria-invalid=${#fields.hasErrors('amount')}"
+										class="w-full md:w-16 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none p-3 focus:border-sky-500 focus:ring-sky-500"
+									/>
+
+									<button type="button" class="size-10 leading-10 text-zinc-600 transition hover:opacity-75 px-6">
+										&plus;
+									</button>
+								</div>
+
+								<small
+									th:if="${#fields.hasErrors('amount')}"
+									th:errorclass="text-red-500"
+									th:errors="*{amount}">
+								</small>
+							</div>
+
+							<button
+								class="w-full sm:w-auto inline-block shrink-0 rounded-md border border-sky-500 bg-sky-500 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-sky-600 focus:outline-none focus:ring active:text-sky-500"
+							>
+								Payer
+							</button>
+						</form>
+					</div>
+				</section>
+
+				<hr class="my-16 mx-auto w-2/3 border-pink-500/10"/>
+
+				<section class="mx-auto">
+					<div class="overflow-x-auto">
+						<h2 class="text-center font-bold text-zinc-500 text-xl mb-16">Historique de mes transferts</h2>
+						<table class="min-w-full divide-y-2 divide-zinc-200 bg-white text-sm">
+							<thead>
+							<tr>
+								<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Relation</th>
+								<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Date</th>
+								<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Description</th>
+								<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Montant</th>
+							</tr>
+							</thead>
+
+							<tbody class="divide-y divide-zinc-200">
+							<tr th:each="transaction : ${transactions}" class="odd:bg-zinc-50">
+								<td th:text="${transaction.username}" class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900"></td>
+								<td th:text="${transaction.processedAt}" class="whitespace-nowrap px-4 py-2 text-zinc-700"></td>
+								<td th:text="${transaction.description}" class="whitespace-nowrap px-4 py-2 text-zinc-700"></td>
+								<td th:text="${transaction.isSender} ? '- ' + ${transaction.amount} + ' €' : '+ ' + ${transaction.amount} + ' €'"
+									class="font-bold"
+									th:classappend="${transaction.isSender} ? 'text-orange-500' : 'text-sky-500'"></td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</section>
+			</div>
+		</main>
+	</th:block>
+</th:block>

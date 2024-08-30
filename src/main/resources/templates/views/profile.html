@@ -1,0 +1,106 @@
+<th:block layout:decorate="~{layouts/main-layout}">
+
+	<th:block layout:fragment="content">
+		<div th:replace="~{fragments/header :: header}"></div>
+
+		<main class="bg-[url('/images/pattern-orange.png')] py-10 px-4 md:px-16 xl:px-32">
+
+			<div class="min-h-screen-minus-header backdrop-blur-sm bg-zinc-50 border border-orange-500/5 p-5 md:p-16">
+				<h1 class="text-center font-bold text-orange-500 text-2xl uppercase border-b border-orange-500/40 p-5 mb-16">Profil</h1>
+
+				<section>
+					<form th:action="@{/profil}" th:object="${user}" method="post"  class="w-full sm:w-4/5 md:w-2/3 lg:w-3/5 2xl:w-1/3 py-8 flex flex-col gap-6 mx-auto">
+						<div>
+							<label for="username" class="block text-sm font-medium text-zinc-700">
+								Nom d'utilisateur :
+							</label>
+
+							<input
+								type="text"
+								id="username"
+								name="username"
+								th:field="*{username}"
+								th:value="*{username}"
+								th:attr="aria-invalid=${#fields.hasErrors('username')}"
+								class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
+							/>
+
+							<small
+								th:if="${#fields.hasErrors('username')}"
+								th:errorclass="text-red-500"
+								th:errors="*{username}">
+							</small>
+						</div>
+
+						<div>
+							<label for="email" class="block text-sm font-medium text-zinc-700"> Email : </label>
+
+							<input
+								type="email"
+								id="email"
+								name="email"
+								th:field="*{email}"
+								th:value="*{email}"
+								th:attr="aria-invalid=${#fields.hasErrors('email')}"
+								class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
+							/>
+
+							<small
+								th:if="${#fields.hasErrors('email')}"
+								th:errorclass="text-red-500"
+								th:errors="*{email}">
+							</small>
+						</div>
+
+						<div>
+							<label for="password" class="block text-sm font-medium text-zinc-700">Mot de
+								passe :</label>
+
+							<input
+								type="password"
+								id="password"
+								name="password"
+								th:field="*{password}"
+								th:attr="aria-invalid=${#fields.hasErrors('password')}"
+								class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
+							/>
+
+							<small
+								th:if="${#fields.hasErrors('password')}"
+								th:errorclass="text-red-500"
+								th:errors="*{password}">
+							</small>
+						</div>
+
+						<div>
+							<label for="passwordConfirmation" class="block text-sm font-medium text-zinc-700">
+								Confirmation du mot de passe :
+							</label>
+
+							<input
+								type="password"
+								id="passwordConfirmation"
+								name="passwordConfirmation"
+								th:field="*{passwordConfirmation}"
+								th:attr="aria-invalid=${#fields.hasErrors('passwordConfirmation')}"
+								class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
+							/>
+
+							<small
+								th:if="${#fields.hasErrors('passwordConfirmation')}"
+								th:errorclass="text-red-500"
+								th:errors="*{passwordConfirmation}">
+							</small>
+						</div>
+
+						<button
+							class="w-full sm:w-auto inline-block shrink-0 rounded-md border border-sky-500 bg-sky-500 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-sky-600 focus:outline-none focus:ring active:text-pink-500 mx-auto mt-4"
+						>
+							Modifier
+						</button>
+					</form>
+				</section>
+			</div>
+		</main>
+	</th:block>
+</th:block>

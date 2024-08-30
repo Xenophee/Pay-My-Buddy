@@ -16,23 +16,22 @@ SET search_path TO dev;
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
+    username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(250) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP
 );
 
 ---------------------------------------------------
 -- Créer la table des connexions entre utilisateurs
 ---------------------------------------------------
-CREATE TABLE IF NOT EXISTS connections (
+CREATE TABLE IF NOT EXISTS relationships (
     requester_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     receiver_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     validated_at TIMESTAMP,
-    is_read BOOLEAN NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (requester_id, receiver_id),
-    CHECK (requester_id <> receiver_id)
+    PRIMARY KEY (requester_id, receiver_id)
 );
 
 ---------------------------------------------------
@@ -40,7 +39,7 @@ CREATE TABLE IF NOT EXISTS connections (
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS accounts (
     user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-    balance NUMERIC(15, 2) NOT NULL DEFAULT 0.00
+    balance NUMERIC(15, 2) DEFAULT 0.00
 );
 
 ---------------------------------------------------
@@ -51,27 +50,6 @@ CREATE TABLE IF NOT EXISTS transactions (
     sender_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     receiver_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     amount NUMERIC(15, 2) NOT NULL CHECK (amount > 0),
-    description VARCHAR(500),
+    description VARCHAR(250),
     processed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
-
----------------------------------------------------
--- Créer la fonction pour créer un compte après l'insertion d'un utilisateur
----------------------------------------------------
-CREATE OR REPLACE FUNCTION create_account_after_user_insert()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO accounts (user_id)
-    VALUES (NEW.id);
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
----------------------------------------------------
--- Créer le trigger pour créer un compte après l'insertion d'un utilisateur
----------------------------------------------------
-CREATE TRIGGER after_user_insert
-    AFTER INSERT ON users
-    FOR EACH ROW
-    EXECUTE FUNCTION create_account_after_user_insert();

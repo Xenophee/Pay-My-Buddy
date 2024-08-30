@@ -1,82 +1,123 @@
 <th:block layout:decorate="~{layouts/main-layout}">
-  <main layout:fragment="content" class="min-h-screen flex items-center bg-[url('/images/pattern-pink.png')]">
-    <section class="backdrop-blur-sm flex items-center justify-center border border-orange-500/40 rounded-2xl shadow-lg mx-auto p-5">
+	<main layout:fragment="content" class="min-h-screen flex items-center bg-[url('/images/pattern-pink.png')]">
+		<section
+			class="backdrop-blur-sm flex items-center justify-center border border-orange-500/40 rounded-2xl shadow-lg mx-auto p-5">
 
-      <div class="bg-zinc-50 rounded-2xl p-5">
-        <a class="block" href="/">
-          <img src="/images/logo.png" class="w-12" alt="Logo de l'application Pay My Buddy" title="Accueil"/>
-        </a>
+			<div class="bg-zinc-50 rounded-2xl p-5">
+				<a class="block" href="/">
+					<img src="/images/logo.png" class="w-12" alt="Logo de l'application Pay My Buddy" title="Accueil" />
+				</a>
 
-        <h1 class="mt-6 text-2xl font-bold sm:text-3xl md:text-4xl bg-gradient-to-r from-orange-500 via-sky-500 to-pink-500 bg-clip-text text-transparent pb-5">
-          Rejoignez Pay My Buddy
-        </h1>
+				<h1 class="mt-6 text-2xl font-bold sm:text-3xl md:text-4xl bg-gradient-to-r from-orange-500 via-sky-500 to-pink-500 bg-clip-text text-transparent pb-5">
+					Rejoignez Pay My Buddy
+				</h1>
 
-        <p class="mt-4 leading-relaxed text-zinc-600">
-          Simple, rapide, sécurisé : commencez à payer vos amis dès maintenant !
-        </p>
+				<p class="mt-4 leading-relaxed text-zinc-600">
+					Simple, rapide, sécurisé : commencez à payer vos amis dès maintenant !
+				</p>
 
-        <form action="#" class="mt-8 flex flex-col gap-6">
-          <div>
-            <label for="username" class="block text-sm font-medium text-zinc-700">
-              Nom d'utilisateur * :
-            </label>
+				<form th:action="@{/sign-up}" th:object="${user}" method="post" class="mt-8 flex flex-col gap-6">
 
-            <input
-                type="text"
-                id="username"
-                name="username"
-                class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
-            />
-          </div>
+					<!-- Error Message -->
+					<div th:if="${errorMessage}" class="text-red-500">
+						<p class="text-wrap" th:text="${errorMessage}"></p>
+					</div>
 
-          <div>
-            <label for="email" class="block text-sm font-medium text-zinc-700"> Email * : </label>
+					<div>
+						<label for="username" class="block text-sm font-medium text-zinc-700">
+							Nom d'utilisateur * :
+						</label>
 
-            <input
-                type="email"
-                id="email"
-                name="email"
-                class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
-            />
-          </div>
+						<input
+							type="text"
+							id="username"
+							name="username"
+							th:field="*{username}"
+							th:value="*{username}"
+							th:attr="aria-invalid=${#fields.hasErrors('username')}"
+							class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
+						/>
 
-          <div>
-            <label for="password" class="block text-sm font-medium text-zinc-700">Mot de
-              passe * :</label>
+						<small
+							th:if="${#fields.hasErrors('username')}"
+							th:errorclass="text-red-500"
+							th:errors="*{username}">
+						</small>
+					</div>
 
-            <input
-                type="password"
-                id="password"
-                name="password"
-                class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
-            />
-          </div>
+					<div>
+						<label for="email" class="block text-sm font-medium text-zinc-700"> Email * : </label>
 
-          <div>
-            <label for="passwordConfirmation" class="block text-sm font-medium text-zinc-700">
-              Confirmation du mot de passe * :
-            </label>
+						<input
+							type="email"
+							id="email"
+							name="email"
+							th:field="*{email}"
+							th:value="*{email}"
+							th:attr="aria-invalid=${#fields.hasErrors('email')}"
+							class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
+						/>
 
-            <input
-                type="password"
-                id="passwordConfirmation"
-                name="passwordConfirmation"
-                class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
-            />
-          </div>
+						<small
+							th:if="${#fields.hasErrors('email')}"
+							th:errorclass="text-red-500"
+							th:errors="*{email}">
+						</small>
+					</div>
 
-          <p class="mt-4 text-sm text-zinc-500 sm:mt-0 mx-auto">
-            Déjà un compte ?
-            <a href="/sign-in" class="text-zinc-700 underline">Se connecter</a>.
-          </p>
+					<div>
+						<label for="password" class="block text-sm font-medium text-zinc-700">Mot de
+							passe * :</label>
 
-          <button
-              class="inline-block shrink-0 rounded-md border border-pink-500 bg-pink-500 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-pink-600 focus:outline-none focus:ring active:text-pink-500 mx-auto"
-          >
-            Créer mon compte
-          </button>
-        </form>
-      </div>
-    </section>
-  </main>
+						<input
+							type="password"
+							id="password"
+							name="password"
+							th:field="*{password}"
+							th:attr="aria-invalid=${#fields.hasErrors('password')}"
+							class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
+						/>
+
+						<small
+							th:if="${#fields.hasErrors('password')}"
+							th:errorclass="text-red-500"
+							th:errors="*{password}">
+						</small>
+					</div>
+
+					<div>
+						<label for="passwordConfirmation" class="block text-sm font-medium text-zinc-700">
+							Confirmation du mot de passe * :
+						</label>
+
+						<input
+							type="password"
+							id="passwordConfirmation"
+							name="passwordConfirmation"
+							th:field="*{passwordConfirmation}"
+							th:attr="aria-invalid=${#fields.hasErrors('passwordConfirmation')}"
+							class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
+						/>
+
+						<small
+							th:if="${#fields.hasErrors('passwordConfirmation')}"
+							th:errorclass="text-red-500"
+							th:errors="*{passwordConfirmation}">
+						</small>
+					</div>
+
+					<p class="mt-4 text-sm text-zinc-500 sm:mt-0 mx-auto">
+						Déjà un compte ?
+						<a href="/sign-in" class="text-zinc-700 underline">Se connecter</a>.
+					</p>
+
+					<button
+						class="inline-block shrink-0 rounded-md border border-pink-500 bg-pink-500 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-pink-600 focus:outline-none focus:ring active:text-pink-500 mx-auto"
+					>
+						Créer mon compte
+					</button>
+				</form>
+			</div>
+		</section>
+	</main>
 </th:block>
