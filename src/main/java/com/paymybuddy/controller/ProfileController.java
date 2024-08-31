@@ -76,7 +76,11 @@ public class ProfileController {
         try {
             logger.info("Enregistrement de la modification de l'utilisateur en cours : {}", userUpdate.getUsername());
 
-            userService.updateUser(userUpdate, user.get().id());
+            User userUpdated = userService.updateUser(userUpdate, user.get().id());
+            UserSessionDTO newUserSession = new UserSessionDTO(userUpdated.getId(), userUpdated.getUsername(), userUpdated.getEmail());
+            session.setAttribute("user", newUserSession);
+
+            model.addAttribute("successMessage", "Votre profil a été modifié avec succès.");
 
             logger.info("Modification de l'utilisateur enregistrée avec succès : {}", userUpdate.getUsername());
 

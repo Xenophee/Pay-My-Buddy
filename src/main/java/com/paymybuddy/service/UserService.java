@@ -32,22 +32,22 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void updateUser(UserProfileUpdateDTO updatedUser, Long id) {
+    @Transactional
+    public User updateUser(UserProfileUpdateDTO updatedUser, Long id) {
         Optional<User> userData = userRepository.findById(id);
         User user = userData.get();
-        logger.warn("Info du compte initial : {}", user);
-        logger.warn("Info de la modification : {}", updatedUser);
 
         user.setUsername(updatedUser.getUsername());
         user.setEmail(updatedUser.getEmail());
 
         if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
             user.setPassword(updatedUser.getPassword());
+            user.setPasswordConfirmation(updatedUser.getPasswordConfirmation());
+        } else {
+            user.setPasswordConfirmation(userData.get().getPassword());
         }
 
-        logger.warn("Infos finales : {}", user);
-
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public UserSessionDTO authenticateUser(String email, String password) {

@@ -46,6 +46,11 @@ public class RelationshipService {
             throw new RuntimeException("La relation existe déjà.");
         }
 
+        if (relationshipRepository.existsWaitingByUserIdAndReceiverId(requester.id(), receiver.getId())) {
+            logger.warn("La relation est en attente entre l'utilisateur {} et l'utilisateur {}", requester.username(), receiver.getUsername());
+            throw new RuntimeException("La relation est en attente.");
+        }
+
         User user = new User();
         user.setId(requester.id());
 
@@ -56,5 +61,23 @@ public class RelationshipService {
         relationship.setId(relationshipId);
 
         relationshipRepository.save(relationship);
+    }
+
+    public void validateRelationship(long requesterId, long receiverId) {
+        Relationship relationship = relationshipRepository.findByRequesterIdAndReceiverId(requesterId, receiverId)
+                .orElseThrow(() -> new RuntimeException("La relation n'existe pas."));
+
+        relationship.setValidatedAt(LocalDateTime.now());
+        relationshipRepository.save(relationship);
+    }
+
+    public void deleteRelationship(long requesterId, long receiverId) {
+        Relationship relationship = relationshipRepository.findByRequesterIdAndReceiverId(requesterId, receiverId)
+                .orElseThrow(() -> new RuntimeException("La relation n'existe pas."));
+        relationshipRepository.delete(relationship);
+    }
+
+    public List<UserRelationshipProjection> getWaitingUserRelations(long userId) {
+        return relationshipRepository.findWaitingUserRelations(userId);
     }
 }

@@ -46,21 +46,38 @@
 					</form>
 				</section>
 
-				<section class="w-2/3 pt-12 border-t border-orange-500/40 mx-auto mt-16">
+				<section th:if="${#lists.size(waitingUserRelations) > 0}" class="w-2/3 pt-12 border-t border-orange-500/40 mx-auto mt-16">
 
 					<h2 class="text-center text-zinc-500 font-bold text-xl mb-12">Demandes de relation en attente</h2>
 
-					<div class="md:w-2/3 mx-auto py-4">
+					<div th:each="waitingUserRelation : ${waitingUserRelations}" class="md:w-2/3 mx-auto py-4">
 						<div class="md:flex items-center justify-center md:gap-x-24 lg:gap-x-52 pb-4">
-							<span class="block md:text-nowrap text-center mb-5 md:mb-0">Username | username@gmail.com</span>
+							<span th:text="${waitingUserRelation.username}" class="block md:text-nowrap text-center mb-5 md:mb-0">Username</span>
 
 							<div class="flex justify-around gap-x-5">
-								<a href="/relations?accepted=true&requester=" class="inline-block w-1/2 sm:w-1/3 border border-sky-500 md:w-auto text-center bg-sky-500 text-white text-sm rounded-md transition hover:bg-transparent hover:text-zinc-600 py-2 px-5">Accepter</a>
-								<a href="/relations?accepted=false&requester=" class="inline-block w-1/2 sm:w-1/3 md:w-auto text-center text-zinc-600 text-sm bg-transparent rounded-md border border-pink-500 hover:bg-pink-500 hover:text-white transition py-2 px-5">Refuser</a>
+								<a th:href="@{/relations(accepted=true, requesterId=${waitingUserRelation.id})}" class="inline-block w-1/2 sm:w-1/3 border border-sky-500 md:w-auto text-center bg-sky-500 text-white text-sm rounded-md transition hover:bg-transparent hover:text-zinc-600 py-2 px-5">Accepter</a>
+								<a th:href="@{/relations(accepted=false, requesterId=${waitingUserRelation.id})}" class="inline-block w-1/2 sm:w-1/3 md:w-auto text-center text-zinc-600 text-sm bg-transparent rounded-md border border-pink-500 hover:bg-pink-500 hover:text-white transition py-2 px-5">Refuser</a>
 							</div>
 						</div>
 
 						<hr>
+					</div>
+				</section>
+
+				<section th:if="${#lists.size(userRelations) > 0}" class="mx-auto pt-12 border-t border-orange-500/40 md:2/3 xl:w-1/2 mt-16">
+					<div class="overflow-x-auto">
+						<h2 class="text-center font-bold text-zinc-500 text-xl mb-16">Mes relations</h2>
+						<table class="min-w-full divide-y-2 divide-zinc-200 bg-white text-sm">
+
+							<tbody class="divide-y divide-zinc-200">
+							<tr th:each="userRelation : ${userRelations}" class="odd:bg-zinc-50">
+								<td th:text="${userRelation.getUsername()}" class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900"></td>
+								<td class="whitespace-nowrap px-4 py-2 text-zinc-700 flex justify-end">
+									<a th:href="@{/relations(deleteRelationship=${userRelation.getId()})}" class="border-pink-500 border bg-pink-500 hover:bg-transparent text-white hover:text-zinc-600 transition px-5 py-2">Supprimer</a>
+								</td>
+							</tr>
+							</tbody>
+						</table>
 					</div>
 				</section>
 			</div>
