@@ -1,7 +1,6 @@
 package com.paymybuddy.service;
 
 
-import com.paymybuddy.dto.TransactionDTO;
 import com.paymybuddy.dto.TransactionProjection;
 import com.paymybuddy.dto.UserSessionDTO;
 import com.paymybuddy.model.Account;
@@ -9,7 +8,6 @@ import com.paymybuddy.model.Transaction;
 import com.paymybuddy.model.User;
 import com.paymybuddy.repository.AccountRepository;
 import com.paymybuddy.repository.TransactionRepository;
-import com.paymybuddy.util.DateFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +47,8 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
-    public List<TransactionDTO> getTransactionsByUserIdWithUsernames(Long userId) {
-
-        List<TransactionDTO> transactions = transactionRepository.findAllByUserIdWithUsernames(userId);
-
-        return transactions;
+    public List<TransactionProjection> getTransactionsByUserIdWithUsernames(long userId) {
+        return transactionRepository.findAllByUserIdWithUsernames(userId);
     }
 
 }

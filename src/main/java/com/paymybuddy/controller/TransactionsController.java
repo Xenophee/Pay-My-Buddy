@@ -1,6 +1,5 @@
 package com.paymybuddy.controller;
 
-import com.paymybuddy.dto.TransactionDTO;
 import com.paymybuddy.dto.TransactionProjection;
 import com.paymybuddy.dto.UserRelationshipProjection;
 import com.paymybuddy.dto.UserSessionDTO;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +49,9 @@ public class TransactionsController {
         UserSessionDTO user = (UserSessionDTO) session.getAttribute("user");
         accountService.getAccountByUserId(user.id()).ifPresent(account -> model.addAttribute("balance", account.getBalance() + " €"));
         List<UserRelationshipProjection> relationships = relationshipService.getUserRelations(user.id());
-        List<TransactionDTO> transactions = transactionService.getTransactionsByUserIdWithUsernames(user.id());
+        List<TransactionProjection> transactions = transactionService.getTransactionsByUserIdWithUsernames(user.id());
+
+        logger.info("Transactions : {}", transactions.get(0));
 
         model.addAttribute("transactions", transactions);
         model.addAttribute("relationships", relationships);
