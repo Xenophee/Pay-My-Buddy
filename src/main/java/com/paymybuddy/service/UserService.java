@@ -5,6 +5,7 @@ import com.paymybuddy.dto.UserProfileUpdateDTO;
 import com.paymybuddy.dto.UserSessionDTO;
 import com.paymybuddy.model.User;
 import com.paymybuddy.repository.UserRepository;
+import com.paymybuddy.util.PasswordUtil;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +28,10 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-//    ! PRÉVOIR LE HASHAGE DU MOT DE PASSE
+
     public void registerUser(User user) {
+        String hashedPassword = PasswordUtil.hashPassword(user.getPassword());
+        user.setPassword(hashedPassword);
         userRepository.save(user);
     }
 
@@ -41,8 +44,9 @@ public class UserService {
         user.setEmail(updatedUser.getEmail());
 
         if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-            user.setPassword(updatedUser.getPassword());
-            user.setPasswordConfirmation(updatedUser.getPasswordConfirmation());
+            String hashedPassword = PasswordUtil.hashPassword(updatedUser.getPassword());
+            user.setPassword(hashedPassword);
+            user.setPasswordConfirmation(hashedPassword);
         } else {
             user.setPasswordConfirmation(userData.get().getPassword());
         }
@@ -62,7 +66,7 @@ public class UserService {
         User user = optionalUser.get();
 
         // ! Changer le traitement de l'erreur
-        if (!user.getPassword().equals(password)) {
+        if (!PasswordUtil.checkPassword(password, user.getPassword())) {
             logger.warn("Mot de passe erroné pour l'addresse mail : {}", email);
             throw new RuntimeException("Mot de passe erroné.");
         }

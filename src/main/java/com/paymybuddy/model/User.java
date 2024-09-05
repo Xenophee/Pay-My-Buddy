@@ -4,6 +4,7 @@ import com.paymybuddy.dto.UserProfile;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -32,6 +33,10 @@ public class User implements UserProfile {
 
     @Column(name = "password", nullable = false)
     @NotEmpty(message = "Veuillez saisir un mot de passe.")
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$!?%^&+=]).{8,}$",
+            message = "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial (@#$!?%^&+=)"
+    )
     private String password;
 
     @Transient
