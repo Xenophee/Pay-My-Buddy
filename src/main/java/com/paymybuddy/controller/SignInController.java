@@ -17,6 +17,9 @@ public class SignInController {
 
     private static final Logger logger = LoggerFactory.getLogger(SignInController.class);
 
+    private static final String SIGN_IN_VIEW = "views/sign-in";
+    private static final String REDIRECT_AFTER_SIGN_IN = "redirect:/transactions";
+
     private final UserService userService;
 
     @Autowired
@@ -30,27 +33,26 @@ public class SignInController {
     }
 
     @GetMapping
-    public String signIn(Model model) {
-        return "views/sign-in";
+    public String signIn() {
+        return SIGN_IN_VIEW;
     }
 
     @PostMapping
     public String signIn(@RequestParam String email,
                          @RequestParam String password,
-                         Model model,
                          HttpSession session) {
 
-        model.addAttribute("email", email);
+        logger.info("Requête de connexion pour l'utilisateur : {}", email);
 
-        try {
-            UserSessionDTO user = userService.authenticateUser(email, password);
-            session.setAttribute("user", user);
-            return "redirect:/transactions";
+        UserSessionDTO user = userService.authenticateUser(email, password);
 
-        } catch (RuntimeException e) {
-            model.addAttribute("errorMessage", e.getMessage());
-            return "views/sign-in";
-        }
+        logger.info("Utilisateur connecté : {}", email);
+
+        session.setAttribute("user", user);
+
+        logger.info("Session utilisateur créée : {}", session.getId());
+
+        return REDIRECT_AFTER_SIGN_IN;
     }
 
 }

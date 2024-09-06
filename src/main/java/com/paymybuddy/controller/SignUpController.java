@@ -22,6 +22,9 @@ public class SignUpController {
 
     private static final Logger logger = LoggerFactory.getLogger(SignUpController.class);
 
+    private static final String SIGN_UP_VIEW = "views/sign-up";
+    private static final String REDIRECT_AFTER_SIGN_UP = "redirect:/sign-in";
+
     private final UserService userService;
 
     @Autowired
@@ -38,14 +41,13 @@ public class SignUpController {
     @GetMapping
     public String signUp(Model model) {
         model.addAttribute("user", new User());
-        return "views/sign-up";
+        return SIGN_UP_VIEW;
     }
 
     @PostMapping
     public String registerUser(@ModelAttribute("user") @Valid User user,
                                BindingResult result,
-                               RedirectAttributes redirectAttributes,
-                               Model model) {
+                               RedirectAttributes redirectAttributes) {
 
         logger.info("Requête pour la création d'un nouvel utilisateur : {}", user.getUsername());
 
@@ -53,23 +55,16 @@ public class SignUpController {
 
         if (result.hasErrors()) {
             logger.warn("Données utilisateur non valide pour l'enregistrement : {}", user.getUsername() + ", " + user.getEmail());
-            return "views/sign-up";
+            return SIGN_UP_VIEW;
         }
 
-        try {
-            logger.info("Enregistrement du nouvel utilisateur en cours : {}", user.getUsername());
+        logger.info("Enregistrement du nouvel utilisateur en cours : {}", user.getUsername() + ", " + user.getEmail());
 
-            userService.registerUser(user);
-            redirectAttributes.addFlashAttribute("successMessage", "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.");
+        userService.registerUser(user);
+        redirectAttributes.addFlashAttribute("successMessage", "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.");
 
-            logger.info("Nouvel utilisateur enregistré avec succès : {}", user.getUsername());
+        logger.info("Nouvel utilisateur enregistré avec succès : {}", user.getUsername() + ", " + user.getEmail());
 
-            return "redirect:/sign-in";
-
-        } catch (Exception e) {
-            logger.error("Erreur lors de la création de compte : {}", e.getMessage());
-            model.addAttribute("errorMessage", "Erreur lors de la création de votre compte. Veuillez réessayer.");
-            return "views/sign-up";
-        }
+        return REDIRECT_AFTER_SIGN_UP;
     }
 }

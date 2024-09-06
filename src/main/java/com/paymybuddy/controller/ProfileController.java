@@ -5,6 +5,7 @@ import com.paymybuddy.dto.UserProfileUpdateDTO;
 import com.paymybuddy.dto.UserSessionDTO;
 import com.paymybuddy.model.User;
 import com.paymybuddy.service.UserService;
+import com.paymybuddy.util.SessionUtil;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -28,6 +29,8 @@ public class ProfileController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProfileController.class);
 
+    private static final String PROFILE_VIEW = "views/profile";
+
     private final UserService userService;
 
     @Autowired
@@ -40,55 +43,48 @@ public class ProfileController {
         model.addAttribute("title", "Mon profil - Pay My Buddy");
     }
 
+
     @GetMapping
     public String profile(HttpSession session, Model model) {
 
-        Optional<UserSessionDTO> userSession = Optional.ofNullable((UserSessionDTO) session.getAttribute("user"));
-
-        if (userSession.isEmpty()) return "redirect:/sign-in";
+        UserSessionDTO userSession = SessionUtil.getUserSession(session);
 
         UserProfileUpdateDTO user = new UserProfileUpdateDTO();
-        user.setUsername(userSession.get().username());
-        user.setEmail(userSession.get().email());
+        user.setUsername(userSession.username());
+        user.setEmail(userSession.email());
 
         model.addAttribute("user", user);
 
-        return "/views/profile";
+        return PROFILE_VIEW;
     }
 
     @PostMapping
-    public String registerUser(@ModelAttribute("user") @Valid UserProfileUpdateDTO userUpdate,
-                               BindingResult result,
-                               Model model,
-                               HttpSession session) {
+    public String updateUserProfile(@ModelAttribute("user") @Valid UserProfileUpdateDTO userUpdate,
+                                    BindingResult result,
+                                    Model model,
+                                    HttpSession session) {
 
         logger.info("Requête pour la modification d'un nouvel utilisateur : {}", userUpdate.getUsername());
 
-        Optional<UserSessionDTO> user = Optional.ofNullable((UserSessionDTO) session.getAttribute("user"));
+        UserSessionDTO userSession = SessionUtil.getUserSession(session);
 
-        userService.userVerification(userUpdate, result, user.get());
+        userService.userVerification(userUpdate, result, userSession);
 
         if (result.hasErrors()) {
             logger.warn("Données utilisateur non valide pour la modification : {}", userUpdate.getUsername() + ", " + userUpdate.getEmail());
-            return "views/profile";
+            return PROFILE_VIEW;
         }
 
-        try {
-            logger.info("Enregistrement de la modification de l'utilisateur en cours : {}", userUpdate.getUsername());
+        logger.info("Enregistrement de la modification de l'utilisateur en cours : {}", userUpdate.getUsername());
 
-            User userUpdated = userService.updateUser(userUpdate, user.get().id());
-            UserSessionDTO newUserSession = new UserSessionDTO(userUpdated.getId(), userUpdated.getUsername(), userUpdated.getEmail());
-            session.setAttribute("user", newUserSession);
+        User userUpdated = userService.updateUser(userUpdate, userSession.id());
+        UserSessionDTO newUserSession = new UserSessionDTO(userUpdated.getId(), userUpdated.getUsername(), userUpdated.getEmail());
+        session.setAttribute("user", newUserSession);
 
-            model.addAttribute("successMessage", "Votre profil a été modifié avec succès.");
+        model.addAttribute("successMessage", "Votre profil a été modifié avec succès.");
 
-            logger.info("Modification de l'utilisateur enregistrée avec succès : {}", userUpdate.getUsername());
+        logger.info("Modification de l'utilisateur enregistrée avec succès : {}", userUpdate.getUsername());
 
-        } catch (Exception e) {
-            logger.error("Erreur lors de la modification du compte : {}", e.getMessage());
-            model.addAttribute("errorMessage", "Erreur lors de la modification de votre compte. Veuillez réessayer.");
-        }
-
-        return "views/profile";
+        return PROFILE_VIEW;
     }
 }

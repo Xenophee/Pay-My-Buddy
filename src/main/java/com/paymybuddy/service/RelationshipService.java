@@ -3,10 +3,10 @@ package com.paymybuddy.service;
 
 import com.paymybuddy.dto.UserRelationshipProjection;
 import com.paymybuddy.dto.UserSessionDTO;
+import com.paymybuddy.exception.RelationshipsException;
 import com.paymybuddy.model.Relationship;
 import com.paymybuddy.model.User;
 import com.paymybuddy.repository.RelationshipRepository;
-import com.paymybuddy.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +22,10 @@ public class RelationshipService {
     private static final Logger logger = LoggerFactory.getLogger(RelationshipService.class);
 
     private final RelationshipRepository relationshipRepository;
-    private final UserRepository userRepository;
 
     @Autowired
-    public RelationshipService(RelationshipRepository relationshipRepository, UserRepository userRepository) {
+    public RelationshipService(RelationshipRepository relationshipRepository) {
         this.relationshipRepository = relationshipRepository;
-        this.userRepository = userRepository;
     }
 
     public List<UserRelationshipProjection> getUserRelations(Long userId) {
@@ -38,17 +36,17 @@ public class RelationshipService {
 
         if(requester.id() == receiver.getId()) {
             logger.warn("L'utilisateur {} ne peut pas être ami avec lui-même.", requester.username());
-            throw new RuntimeException("Vous ne pouvez pas être ami avec vous-même.");
+            throw new RelationshipsException("Vous ne pouvez pas être ami avec vous-même.");
         }
 
         if (relationshipRepository.existsByUserIdAndReceiverId(requester.id(), receiver.getId())) {
             logger.warn("La relation existe déjà entre l'utilisateur {} et l'utilisateur {}", requester.username(), receiver.getUsername());
-            throw new RuntimeException("La relation existe déjà.");
+            throw new RelationshipsException("La relation existe déjà.");
         }
 
         if (relationshipRepository.existsWaitingByUserIdAndReceiverId(requester.id(), receiver.getId())) {
             logger.warn("La relation est en attente entre l'utilisateur {} et l'utilisateur {}", requester.username(), receiver.getUsername());
-            throw new RuntimeException("La relation est en attente.");
+            throw new RelationshipsException("La relation est en attente.");
         }
 
         User user = new User();

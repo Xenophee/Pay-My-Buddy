@@ -3,6 +3,8 @@ package com.paymybuddy.service;
 import com.paymybuddy.dto.UserProfile;
 import com.paymybuddy.dto.UserProfileUpdateDTO;
 import com.paymybuddy.dto.UserSessionDTO;
+import com.paymybuddy.exception.SignInException;
+import com.paymybuddy.exception.UnexpectedNotFoundException;
 import com.paymybuddy.model.User;
 import com.paymybuddy.repository.UserRepository;
 import com.paymybuddy.util.PasswordUtil;
@@ -13,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
-import java.util.List;
 import java.util.Optional;
+
 
 @Service
 public class UserService {
@@ -37,8 +39,12 @@ public class UserService {
 
     @Transactional
     public User updateUser(UserProfileUpdateDTO updatedUser, Long id) {
-        Optional<User> userData = userRepository.findById(id);
-        User user = userData.get();
+
+        User user= userRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Aucun utilisateur trouvé avec l'ID : {}", id);
+                    return new UnexpectedNotFoundException("Utilisateur non trouvé.");
+                });
 
         user.setUsername(updatedUser.getUsername());
         user.setEmail(updatedUser.getEmail());
@@ -48,27 +54,22 @@ public class UserService {
             user.setPassword(hashedPassword);
             user.setPasswordConfirmation(hashedPassword);
         } else {
-            user.setPasswordConfirmation(userData.get().getPassword());
+            user.setPasswordConfirmation(user.getPassword());
         }
 
         return userRepository.save(user);
     }
 
     public UserSessionDTO authenticateUser(String email, String password) {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    logger.warn("Aucun compte existant avec cette adresse mail : {}", email);
+                    return new SignInException("Aucun compte existant avec cette adresse mail.");
+                });
 
-        // ! Changer le traitement de l'erreur
-        if (optionalUser.isEmpty()) {
-            logger.warn("Aucun compte existant avec cette adresse mail : {}", email);
-            throw new RuntimeException("Aucun compte existant avec cette adresse mail.");
-        }
-
-        User user = optionalUser.get();
-
-        // ! Changer le traitement de l'erreur
         if (!PasswordUtil.checkPassword(password, user.getPassword())) {
             logger.warn("Mot de passe erroné pour l'addresse mail : {}", email);
-            throw new RuntimeException("Mot de passe erroné.");
+            throw new SignInException("Mot de passe erroné.");
         }
 
         return new UserSessionDTO(user.getId(), user.getUsername(), user.getEmail());
@@ -79,20 +80,30 @@ public class UserService {
     }
 
     public <T extends UserProfile> void userVerification(T user, BindingResult result, UserSessionDTO userSession) {
+        checkUsernameUniqueness(user, result, userSession);
+        checkEmailUniqueness(user, result, userSession);
+        validatePasswordConfirmation(user, result);
+    }
 
-        boolean isUsernameChanged = userSession != null && !user.getUsername().equals(userSession.username());
-        boolean isEmailChanged = userSession != null && !user.getEmail().equals(userSession.email());
+    private <T extends UserProfile> void checkUsernameUniqueness(T user, BindingResult result, UserSessionDTO userSession) {
+        boolean isUsernameChangedOrNewUser = userSession == null || !user.getUsername().equals(userSession.username());
 
-        if ((userSession == null || isUsernameChanged) && userRepository.existsByUsername(user.getUsername())) {
+        if (isUsernameChangedOrNewUser && userRepository.existsByUsername(user.getUsername())) {
             result.rejectValue("username", "error.user", "Ce nom d'utilisateur existe déjà.");
             logger.warn("Le nom d'utilisateur existe déjà : {}", user.getUsername());
         }
+    }
 
-        if ((userSession == null || isEmailChanged) && userRepository.existsByEmail(user.getEmail())) {
+    private <T extends UserProfile> void checkEmailUniqueness(T user, BindingResult result, UserSessionDTO userSession) {
+        boolean isEmailChangedOrNewUser = userSession == null || !user.getEmail().equals(userSession.email());
+
+        if (isEmailChangedOrNewUser && userRepository.existsByEmail(user.getEmail())) {
             result.rejectValue("email", "error.user", "Cette adresse mail est déjà utilisée.");
             logger.warn("L'adresse mail est déjà utilisée : {}", user.getEmail());
         }
+    }
 
+    private <T extends UserProfile> void validatePasswordConfirmation(T user, BindingResult result) {
         if (!user.getPassword().equals(user.getPasswordConfirmation())) {
             result.rejectValue("password", "error.user", "Les mots de passe ne correspondent pas.");
             result.rejectValue("passwordConfirmation", "error.user", "Les mots de passe ne correspondent pas.");
@@ -103,10 +114,6 @@ public class UserService {
 
     public User saveUser(User user) {
         return userRepository.save(user);
-    }
-
-    public List<User> getUsers() {
-        return userRepository.findAll();
     }
 
     public Optional<User> getUserById(Long id) {

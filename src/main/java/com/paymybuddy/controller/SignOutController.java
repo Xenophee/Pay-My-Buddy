@@ -15,9 +15,12 @@ public class SignOutController {
 
     private static final Logger logger = LoggerFactory.getLogger(SignOutController.class);
 
+    private static final String REDIRECT_AFTER_SIGN_OUT = "redirect:/";
+
     @GetMapping
     public String signOut(HttpSession session) {
+        logger.info("Déconnexion de l'utilisateur en cours : {}", session.getAttribute("user"));
         session.invalidate();
-        return "redirect:/";
+        return REDIRECT_AFTER_SIGN_OUT;
     }
 }
