@@ -13,13 +13,13 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -47,23 +47,28 @@ public class TransactionsController {
         model.addAttribute("title", "Mes transactions - Pay My Buddy");
     }
 
-    private void populateModel(HttpSession session, Model model) {
+    private void populateModel(HttpSession session, Model model, int page) {
         UserSessionDTO userSession = SessionUtil.getUserSession(session);
         accountService.getAccountByUserId(userSession.id()).ifPresent(account -> model.addAttribute("balance", account.getBalance() + " €"));
         List<UserRelationshipProjection> relationships = relationshipService.getUserRelations(userSession.id());
-        List<TransactionProjection> transactions = transactionService.getTransactionsByUserIdWithUsernames(userSession.id());
 
-        model.addAttribute("transactions", transactions);
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<TransactionProjection> transactionsPage = transactionService.getTransactions(userSession.id(), pageable);
+
+        model.addAttribute("transactionsPage", transactionsPage);
         model.addAttribute("relationships", relationships);
     }
 
 
     @GetMapping
-    public String transactions(HttpSession session, Model model) {
+    public String transactions(
+            @RequestParam(defaultValue = "0") int page,
+            HttpSession session,
+            Model model) {
 
         SessionUtil.getUserSession(session);
 
-        populateModel(session, model);
+        populateModel(session, model, page);
 
         model.addAttribute("Transaction", new Transaction());
 
@@ -85,7 +90,7 @@ public class TransactionsController {
 
         if (result.hasErrors()) {
             logger.warn("Données de transaction non valide pour l'enregistrement : {}", transaction);
-            populateModel(session, model);
+            populateModel(session, model, 0);
             return TRANSACTIONS_VIEW;
         }
 
@@ -96,7 +101,7 @@ public class TransactionsController {
 
         logger.info("Nouvelle transaction enregistrée avec succès : {}", transaction);
 
-        populateModel(session, model);
+        populateModel(session, model, 0);
         model.addAttribute("Transaction", new Transaction());
 
         return TRANSACTIONS_VIEW;

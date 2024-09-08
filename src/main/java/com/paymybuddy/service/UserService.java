@@ -111,21 +111,8 @@ public class UserService {
         }
     }
 
-
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
-
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
-    }
-
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmail(email);
-    }
-
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
     }
 }
 

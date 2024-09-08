@@ -9,15 +9,9 @@
 
 				<section>
 
-					<!-- Success Message -->
-					<div th:if="${successMessage}" class="text-green-500">
-						<p class="text-wrap" th:text="${successMessage}"></p>
-					</div>
+					<div th:replace="~{fragments/success-message :: success-message}"></div>
 
-					<!-- Error Message -->
-					<div th:if="${errorMessage}" class="text-red-500">
-						<p class="text-wrap" th:text="${errorMessage}"></p>
-					</div>
+					<div th:replace="~{fragments/error-message :: error-message}"></div>
 
 					<div class="flex flex-col lg:flex-row justify-between w-full">
 						<div class="flex items-center justify-center border-pink-500/50 border rounded-2xl md:text-nowrap p-10 mb-10 lg:mb-0 lg:me-5">
@@ -123,7 +117,7 @@
 							</thead>
 
 							<tbody class="divide-y divide-zinc-200">
-							<tr th:each="transaction : ${transactions}" class="odd:bg-zinc-50">
+							<tr th:each="transaction : ${transactionsPage}" class="odd:bg-zinc-50">
 								<td th:text="${transaction.username}" class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900"></td>
 								<td th:text="${transaction.processedAt}" class="whitespace-nowrap px-4 py-2 text-zinc-700"></td>
 								<td th:text="${transaction.description}" class="whitespace-nowrap px-4 py-2 text-zinc-700"></td>
@@ -133,6 +127,44 @@
 							</tr>
 							</tbody>
 						</table>
+					</div>
+
+					<div class="inline-flex items-center justify-center gap-3 w-full mt-5">
+						<a
+							th:if="${transactionsPage.hasPrevious()}"
+							th:href="@{/transactions(page=${transactionsPage.number - 1})}"
+							class="inline-flex size-8 items-center justify-center rounded border border-zinc-100 bg-white text-zinc-900 rtl:rotate-180"
+						>
+							<span class="sr-only">Page précédente</span>
+							<svg xmlns="http://www.w3.org/2000/svg" class="size-3" viewBox="0 0 20 20" fill="currentColor">
+								<path
+									fill-rule="evenodd"
+									d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+						</a>
+
+						<p class="text-xs text-gray-900">
+							[[${transactionsPage.number} + 1]]
+							<span class="mx-0.25">/</span>
+							[[${transactionsPage.totalPages}]]
+						</p>
+
+						<a
+							th:if="${transactionsPage.hasNext()}"
+							th:href="@{/transactions(page=${transactionsPage.number + 1})}"
+							class="inline-flex size-8 items-center justify-center rounded border border-zinc-100 bg-white text-zinc-900 rtl:rotate-180"
+						>
+							<span class="sr-only">Page suivante</span>
+							<svg xmlns="http://www.w3.org/2000/svg" class="size-3" viewBox="0 0 20 20" fill="currentColor">
+								<path
+									fill-rule="evenodd"
+									d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+									clip-rule="evenodd"
+								/>
+							</svg>
+						</a>
 					</div>
 				</section>
 			</div>

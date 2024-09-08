@@ -18,10 +18,7 @@
 
 				<form th:action="@{/sign-up}" th:object="${user}" method="post" class="mt-8 flex flex-col gap-6">
 
-					<!-- Error Message -->
-					<div th:if="${errorMessage}" class="text-red-500">
-						<p class="text-wrap" th:text="${errorMessage}"></p>
-					</div>
+					<div th:replace="~{fragments/error-message :: error-message}"></div>
 
 					<div>
 						<label for="username" class="block text-sm font-medium text-zinc-700">

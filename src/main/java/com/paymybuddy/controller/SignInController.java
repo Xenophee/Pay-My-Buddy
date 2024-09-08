@@ -38,11 +38,18 @@ public class SignInController {
     }
 
     @PostMapping
-    public String signIn(@RequestParam String email,
-                         @RequestParam String password,
-                         HttpSession session) {
+    public String signIn(
+            @RequestParam String email,
+            @RequestParam String password,
+            HttpSession session,
+            Model model) {
 
         logger.info("Requête de connexion pour l'utilisateur : {}", email);
+
+        if (email.isEmpty() || password.isEmpty()) {
+            model.addAttribute("errorMessage", "Veuillez renseigner tous les champs.");
+            return SIGN_IN_VIEW;
+        }
 
         UserSessionDTO user = userService.authenticateUser(email, password);
 
