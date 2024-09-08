@@ -1,36 +1,18 @@
 <th:block layout:decorate="~{layouts/main-layout}">
 	<main layout:fragment="content">
-		<section class="mx-auto px-4 py-32 lg:flex lg:flex-col lg:min-h-screen lg:items-center lg:justify-center">
-
+		<section class="mx-auto px-4 py-32 lg:flex lg:min-h-screen lg:flex-col lg:items-center lg:justify-center">
 			<img src="/images/logo.png" class="mx-auto w-32" alt="Logo de l'application Pay My Buddy" />
 			<div class="mx-auto max-w-3xl text-center">
-				<h1
-					class="bg-gradient-to-r from-orange-500 via-sky-500 to-pink-500 bg-clip-text text-3xl font-extrabold text-transparent sm:text-5xl pb-5"
-				>
-					Pay My Buddy
-				</h1>
+				<h1 class="bg-gradient-to-r from-orange-500 via-sky-500 to-pink-500 bg-clip-text pb-5 font-special text-3xl font-extrabold text-transparent sm:text-5xl">Pay My Buddy</h1>
 
-				<p class="mx-auto max-w-xl sm:text-xl/relaxed">
-					Envoyez de l'argent instantanément, gérez vos finances en toute liberté et en toute sécurité.
-				</p>
+				<p class="mx-auto max-w-xl sm:text-xl/relaxed">Envoyez de l'argent instantanément, gérez vos finances en toute liberté et en toute sécurité.</p>
 
 				<div class="mt-8 flex flex-wrap justify-center gap-4">
-					<a
-						class="block w-full rounded border border-sky-600 bg-sky-600 px-12 py-3 text-lg font-medium text-white hover:bg-transparent hover:text-zinc-800 focus:outline-none active:text-opacity-75 sm:w-auto transition"
-						href="/sign-in"
-					>
-						Se connecter
-					</a>
+					<a class="block w-full rounded border border-sky-600 bg-sky-600 px-12 py-3 text-lg font-medium text-white transition hover:bg-transparent hover:text-zinc-800 focus:outline-none active:text-opacity-75 sm:w-auto" href="/sign-in"> Se connecter </a>
 
-					<a
-						class="block w-full rounded border border-pink-500 px-12 py-3 text-lg font-medium hover:bg-pink-500 hover:text-white focus:outline-none active:bg-pink-400 sm:w-auto transition"
-						href="/sign-up"
-					>
-						S'inscrire
-					</a>
+					<a class="block w-full rounded border border-pink-500 px-12 py-3 text-lg font-medium transition hover:bg-pink-500 hover:text-white focus:outline-none active:bg-pink-400 sm:w-auto" href="/sign-up"> S'inscrire </a>
 				</div>
 			</div>
-
 		</section>
 	</main>
 </th:block>

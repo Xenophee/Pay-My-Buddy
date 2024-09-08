@@ -45,33 +45,6 @@ dependencies {
 
 
 
-//tasks.register<Exec>("npmInstall") {
-//    workingDir = file("${projectDir}")
-//    commandLine = listOf("npm", "install")
-//}
-//
-//tasks.register<Exec>("npmRunDev") {
-//    workingDir = file("${projectDir}")
-//    commandLine = listOf("npm", "run", "dev")
-//}
-//
-//tasks.register<Exec>("npmRunBuild") {
-//    workingDir = file("${projectDir}")
-//    commandLine = listOf("npm", "run", "build")
-//}
-//
-//tasks.named("processResources") {
-//    dependsOn("npmRunBuild")
-//}
-//
-//tasks.named("bootRun") {
-//    dependsOn("npmRunDev")
-//}
-
-
-
-
-
 tasks.withType<Test> {
     useJUnitPlatform()
 }

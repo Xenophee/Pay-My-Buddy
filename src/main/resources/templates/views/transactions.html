@@ -1,74 +1,43 @@
 <th:block layout:decorate="~{layouts/main-layout}">
-
 	<th:block layout:fragment="content">
 		<div th:replace="~{fragments/header :: header}"></div>
 
-		<main class="bg-[url('/images/pattern-orange.png')] py-10 px-4 md:px-16 xl:px-32">
-			<div class="min-h-screen-minus-header backdrop-blur-sm bg-zinc-50 border border-orange-500/5 p-5 md:p-16">
-				<h1 class="text-center font-bold text-orange-500 text-2xl uppercase border-b border-orange-500/40 p-5 mb-16">Transactions</h1>
+		<main class="bg-[url('/images/pattern-orange.png')] px-4 py-10 md:px-16 xl:px-32">
+			<div class="min-h-screen-minus-header border border-orange-500/5 bg-zinc-50 p-5 backdrop-blur-sm md:p-16">
+				<h1 class="mb-16 border-b border-orange-500/40 p-5 text-center font-special text-2xl font-bold uppercase tracking-widest text-orange-500">Transactions</h1>
 
 				<section>
-
 					<div th:replace="~{fragments/success-message :: success-message}"></div>
 
 					<div th:replace="~{fragments/error-message :: error-message}"></div>
 
-					<div class="flex flex-col lg:flex-row justify-between w-full">
-						<div class="flex items-center justify-center border-pink-500/50 border rounded-2xl md:text-nowrap p-10 mb-10 lg:mb-0 lg:me-5">
-							Solde du compte : <span class="text-pink-500 font-bold ms-2" th:text="${balance}"></span>
-						</div>
+					<div class="flex w-full flex-col justify-between lg:flex-row">
+						<div class="mb-10 flex items-center justify-center rounded-2xl border border-pink-500/50 p-10 md:text-nowrap lg:mb-0 lg:me-5">Solde du compte : <span class="ms-2 font-bold text-pink-500" th:text="${balance}"></span></div>
 
-						<form th:action="@{/transactions}" th:object="${Transaction}" method="post"  class="flex flex-col flex-wrap sm:flex-row justify-center lg:justify-end items-center w-full gap-10">
-
+						<form th:action="@{/transactions}" th:object="${Transaction}" method="post" class="flex w-full flex-col flex-wrap justify-center gap-10 sm:flex-row lg:justify-end">
 							<div class="w-full md:w-64 xl:w-72 2xl:w-80">
 								<label for="receiver" class="block text-sm text-zinc-200">
-									<select
-										name="receiver"
-										id="receiver"
-										th:field="*{receiver}"
-										th:value="*{receiver}"
-										th:attr="aria-invalid=${#fields.hasErrors('receiver')}"
-										class="w-full rounded-lg border-zinc-200 text-zinc-700 focus:border-sky-500 focus:ring-sky-500 sm:text-sm shadow-sm p-3 pe-12"
-									>
+									<select name="receiver" id="receiver" th:field="*{receiver}" th:value="*{receiver}" th:attr="aria-invalid=${#fields.hasErrors('receiver')}" class="w-full rounded-lg border-zinc-200 p-3 pe-12 text-zinc-700 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
 										<option value="">Sélectionner une relation</option>
 										<option th:each="relationship : ${relationships}" th:value="${relationship.id}" th:text="${relationship.username}"></option>
 									</select>
 								</label>
 
-								<small
-									th:if="${#fields.hasErrors('receiver')}"
-									th:errorclass="text-red-500"
-									th:errors="*{receiver}">
-								</small>
+								<small th:if="${#fields.hasErrors('receiver')}" th:errorclass="text-red-500" th:errors="*{receiver}"> </small>
 							</div>
 
 							<div class="w-full md:w-64 xl:w-72 2xl:w-80">
 								<label for="description"></label>
-								<input
-									type="text"
-									id="description"
-									name="description"
-									th:field="*{description}"
-									th:value="*{description}"
-									th:attr="aria-invalid=${#fields.hasErrors('description')}"
-									class="w-full rounded-lg border-zinc-200 focus:border-sky-500 focus:ring-sky-500 p-3 pe-12 text-sm shadow-sm"
-									placeholder="Description"
-								/>
+								<input type="text" id="description" name="description" th:field="*{description}" th:value="*{description}" th:attr="aria-invalid=${#fields.hasErrors('description')}" class="w-full rounded-lg border-zinc-200 p-3 pe-12 text-sm shadow-sm focus:border-sky-500 focus:ring-sky-500" placeholder="Description" />
 
-								<small
-									th:if="${#fields.hasErrors('description')}"
-									th:errorclass="text-red-500"
-									th:errors="*{description}">
-								</small>
+								<small th:if="${#fields.hasErrors('description')}" th:errorclass="text-red-500" th:errors="*{description}"> </small>
 							</div>
 
 							<div>
 								<label for="amount" class="sr-only"> Amount </label>
 
 								<div class="flex items-center rounded border border-zinc-200">
-									<button type="button" class="size-10 leading-10 text-zinc-600 transition hover:opacity-75 px-6">
-										&minus;
-									</button>
+									<button type="button" id="lessAmount" class="flex size-10 justify-center px-6 leading-10 text-zinc-600 transition hover:opacity-75">&minus;</button>
 
 									<input
 										type="number"
@@ -77,71 +46,53 @@
 										th:field="*{amount}"
 										th:value="*{amount}"
 										th:attr="aria-invalid=${#fields.hasErrors('amount')}"
-										class="w-full md:w-16 border-transparent text-center [-moz-appearance:_textfield] sm:text-sm [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none p-3 focus:border-sky-500 focus:ring-sky-500"
+										class="w-full border-transparent p-3 text-center [-moz-appearance:_textfield] focus:border-sky-500 focus:ring-sky-500 sm:text-sm md:w-16 [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none"
 									/>
 
-									<button type="button" class="size-10 leading-10 text-zinc-600 transition hover:opacity-75 px-6">
-										&plus;
-									</button>
+									<button type="button" id="moreAmount" class="flex size-10 justify-center px-6 leading-10 text-zinc-600 transition hover:opacity-75">&plus;</button>
 								</div>
 
-								<small
-									th:if="${#fields.hasErrors('amount')}"
-									th:errorclass="text-red-500"
-									th:errors="*{amount}">
-								</small>
+								<small th:if="${#fields.hasErrors('amount')}" th:errorclass="text-red-500" th:errors="*{amount}"> </small>
 							</div>
 
-							<button
-								class="w-full sm:w-auto inline-block shrink-0 rounded-md border border-sky-500 bg-sky-500 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-sky-600 focus:outline-none focus:ring active:text-sky-500"
-							>
-								Payer
-							</button>
+							<div>
+								<button class="inline-block w-full shrink-0 rounded-md border border-sky-500 bg-sky-500 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-sky-600 focus:outline-none focus:ring active:text-sky-500 sm:w-auto">Payer</button>
+							</div>
 						</form>
 					</div>
 				</section>
 
-				<hr class="my-16 mx-auto w-2/3 border-pink-500/10"/>
+				<hr class="mx-auto my-16 w-2/3 border-pink-500/10" />
 
 				<section class="mx-auto">
 					<div class="overflow-x-auto">
-						<h2 class="text-center font-bold text-zinc-500 text-xl mb-16">Historique de mes transferts</h2>
+						<h2 class="mb-16 text-center font-special text-xl font-bold text-zinc-500">Historique de mes transferts</h2>
 						<table class="min-w-full divide-y-2 divide-zinc-200 bg-white text-sm">
 							<thead>
-							<tr>
-								<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Relation</th>
-								<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Date</th>
-								<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Description</th>
-								<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Montant</th>
-							</tr>
+								<tr>
+									<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Relation</th>
+									<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Date</th>
+									<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Description</th>
+									<th class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900">Montant</th>
+								</tr>
 							</thead>
 
 							<tbody class="divide-y divide-zinc-200">
-							<tr th:each="transaction : ${transactionsPage}" class="odd:bg-zinc-50">
-								<td th:text="${transaction.username}" class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900"></td>
-								<td th:text="${transaction.processedAt}" class="whitespace-nowrap px-4 py-2 text-zinc-700"></td>
-								<td th:text="${transaction.description}" class="whitespace-nowrap px-4 py-2 text-zinc-700"></td>
-								<td th:text="${transaction.isSender} ? '- ' + ${transaction.amount} + ' €' : '+ ' + ${transaction.amount} + ' €'"
-									class="font-bold"
-									th:classappend="${transaction.isSender} ? 'text-orange-500' : 'text-sky-500'"></td>
-							</tr>
+								<tr th:each="transaction : ${transactionsPage}" class="odd:bg-zinc-50">
+									<td th:text="${transaction.username}" class="whitespace-nowrap px-4 py-2 font-medium text-zinc-900"></td>
+									<td th:text="${transaction.processedAt}" class="whitespace-nowrap px-4 py-2 text-zinc-700"></td>
+									<td th:text="${transaction.description}" class="whitespace-nowrap px-4 py-2 text-zinc-700"></td>
+									<td th:text="${transaction.isSender} ? '- ' + ${transaction.amount} + ' €' : '+ ' + ${transaction.amount} + ' €'" class="font-bold" th:classappend="${transaction.isSender} ? 'text-orange-500' : 'text-sky-500'"></td>
+								</tr>
 							</tbody>
 						</table>
 					</div>
 
-					<div class="inline-flex items-center justify-center gap-3 w-full mt-5">
-						<a
-							th:if="${transactionsPage.hasPrevious()}"
-							th:href="@{/transactions(page=${transactionsPage.number - 1})}"
-							class="inline-flex size-8 items-center justify-center rounded border border-zinc-100 bg-white text-zinc-900 rtl:rotate-180"
-						>
+					<div class="mt-5 inline-flex w-full items-center justify-center gap-3">
+						<a th:if="${transactionsPage.hasPrevious()}" th:href="@{/transactions(page=${transactionsPage.number - 1})}" class="inline-flex size-8 items-center justify-center rounded border border-zinc-100 bg-white text-zinc-900 rtl:rotate-180">
 							<span class="sr-only">Page précédente</span>
 							<svg xmlns="http://www.w3.org/2000/svg" class="size-3" viewBox="0 0 20 20" fill="currentColor">
-								<path
-									fill-rule="evenodd"
-									d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-									clip-rule="evenodd"
-								/>
+								<path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
 							</svg>
 						</a>
 
@@ -151,18 +102,10 @@
 							[[${transactionsPage.totalPages}]]
 						</p>
 
-						<a
-							th:if="${transactionsPage.hasNext()}"
-							th:href="@{/transactions(page=${transactionsPage.number + 1})}"
-							class="inline-flex size-8 items-center justify-center rounded border border-zinc-100 bg-white text-zinc-900 rtl:rotate-180"
-						>
+						<a th:if="${transactionsPage.hasNext()}" th:href="@{/transactions(page=${transactionsPage.number + 1})}" class="inline-flex size-8 items-center justify-center rounded border border-zinc-100 bg-white text-zinc-900 rtl:rotate-180">
 							<span class="sr-only">Page suivante</span>
 							<svg xmlns="http://www.w3.org/2000/svg" class="size-3" viewBox="0 0 20 20" fill="currentColor">
-								<path
-									fill-rule="evenodd"
-									d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-									clip-rule="evenodd"
-								/>
+								<path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
 							</svg>
 						</a>
 					</div>

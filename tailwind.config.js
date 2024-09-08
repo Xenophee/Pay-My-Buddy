@@ -1,12 +1,21 @@
 /** @type {import("tailwindcss").Config} */
+
+const defaultTheme = require('tailwindcss/defaultTheme')
+
+
 module.exports = {
 	content: [
-		"./src/main/java/resources/templates/**/*.html",
-		"./src/main/java/resources/static/**/*.{css,js}",
+		"./src/main/resources/templates/**/*.html",
+		"./src/main/resources/static/**/*.{css,js}",
 	],
 	theme: {
-		extend: {},
+		extend: {
+			fontFamily: {
+				'sans': ['Roboto', ...defaultTheme.fontFamily.sans],
+				'special': ['Calistoga', 'sans-serif'],
+			}
+		}
 	},
-	plugins: [],
+	plugins: [require('@tailwindcss/forms')],
 };
 

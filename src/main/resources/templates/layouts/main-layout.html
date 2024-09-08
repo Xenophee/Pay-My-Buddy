@@ -1,19 +1,20 @@
 <!doctype html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
-<head>
-	<meta charset="UTF-8" />
-	<meta name="description" content="Thymeleaf description" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="icon" type="image/svg+xml" href="/images/logo.ico" />
-	<link rel="stylesheet" href="/css/style.css" />
-	<script src="https://cdn.tailwindcss.com"></script>
-	<title th:text="${title}">Pay My Buddy</title>
-</head>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Thymeleaf description" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/images/logo.ico" />
+		<link rel="stylesheet" href="/css/output.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Calistoga&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet" />
+		<title th:text="${title}">Pay My Buddy</title>
+	</head>
 
+	<body class="bg-zinc-50 text-zinc-800">
+		<th:block layout:fragment="content"></th:block>
+	</body>
 
-<body class="bg-zinc-50 text-zinc-800">
-
-<th:block layout:fragment="content"></th:block>
-
-</body>
+	<script th:if="${js}" th:src="${js}"></script>
 </html>

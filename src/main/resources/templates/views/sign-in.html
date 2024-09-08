@@ -1,22 +1,16 @@
 <th:block layout:decorate="~{layouts/main-layout}">
-	<main layout:fragment="content" class="min-h-screen flex items-center bg-[url('/images/pattern-sky.png')]">
-		<section class="backdrop-blur-sm flex items-center justify-center border border-orange-500/40 rounded-2xl shadow-lg mx-auto p-5">
-
-			<div class="bg-zinc-50 rounded-2xl p-5">
+	<main layout:fragment="content" class="flex min-h-screen items-center bg-[url('/images/pattern-sky.png')]">
+		<section class="mx-auto flex items-center justify-center rounded-2xl border border-orange-500/40 p-5 shadow-lg backdrop-blur-sm">
+			<div class="rounded-2xl bg-zinc-50 p-5">
 				<a class="block" href="/">
-					<img src="/images/logo.png" class="w-12" alt="Logo de l'application Pay My Buddy" title="Accueil"/>
+					<img src="/images/logo.png" class="w-12" alt="Logo de l'application Pay My Buddy" title="Accueil" />
 				</a>
 
-				<h1 class="mt-6 text-2xl font-bold sm:text-3xl md:text-4xl bg-gradient-to-r from-orange-500 via-sky-500 to-pink-500 bg-clip-text text-transparent pb-5">
-					Content de vous revoir !
-				</h1>
+				<h1 class="mt-6 bg-gradient-to-r from-orange-500 via-sky-500 to-pink-500 bg-clip-text pb-5 font-special text-2xl font-bold text-transparent sm:text-3xl md:text-4xl">Content de vous revoir !</h1>
 
-				<p class="mt-4 leading-relaxed text-zinc-600">
-					Continuez à gérer vos finances en toute simplicité !
-				</p>
+				<p class="mt-4 leading-relaxed text-zinc-600">Continuez à gérer vos finances en toute simplicité !</p>
 
 				<form th:action="@{/sign-in}" method="post" class="mt-8 flex flex-col gap-6">
-
 					<div th:replace="~{fragments/success-message :: success-message}"></div>
 
 					<div th:replace="~{fragments/error-message :: error-message}"></div>
@@ -24,37 +18,21 @@
 					<div>
 						<label for="email" class="block text-sm font-medium text-zinc-700"> Email * : </label>
 
-						<input
-							type="email"
-							id="email"
-							name="email"
-							th:value="${email}"
-							class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
-						/>
+						<input type="email" id="email" name="email" th:value="${email}" class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 shadow-sm focus:border-sky-500 focus:ring-sky-500" />
 					</div>
 
 					<div>
-						<label for="password" class="block text-sm font-medium text-zinc-700">Mot de
-							passe * :</label>
+						<label for="password" class="block text-sm font-medium text-zinc-700">Mot de passe * :</label>
 
-						<input
-							type="password"
-							id="password"
-							name="password"
-							class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 focus:border-sky-500 focus:ring-sky-500 shadow-sm"
-						/>
+						<input type="password" id="password" name="password" class="mt-1 w-full rounded-md border-zinc-200 bg-white text-sm text-zinc-700 shadow-sm focus:border-sky-500 focus:ring-sky-500" />
 					</div>
 
-					<p class="mt-4 text-sm text-zinc-500 sm:mt-0 mx-auto">
+					<p class="mx-auto mt-4 text-sm text-zinc-500 sm:mt-0">
 						Pas encore de compte ?
 						<a href="/sign-up" class="text-zinc-700 underline">S'inscrire</a>.
 					</p>
 
-					<button
-						class="inline-block shrink-0 rounded-md border border-sky-500 bg-sky-500 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-sky-600 focus:outline-none focus:ring active:text-sky-500 mx-auto"
-					>
-						Se connecter
-					</button>
+					<button class="mx-auto inline-block shrink-0 rounded-md border border-sky-500 bg-sky-500 px-12 py-3 text-sm font-medium text-white transition hover:bg-transparent hover:text-sky-600 focus:outline-none focus:ring active:text-sky-500">Se connecter</button>
 				</form>
 			</div>
 		</section>

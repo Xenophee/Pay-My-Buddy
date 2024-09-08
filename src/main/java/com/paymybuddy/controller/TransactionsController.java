@@ -45,6 +45,7 @@ public class TransactionsController {
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("title", "Mes transactions - Pay My Buddy");
+        model.addAttribute("js", "/js/transactions.js");
     }
 
     private void populateModel(HttpSession session, Model model, int page) {
