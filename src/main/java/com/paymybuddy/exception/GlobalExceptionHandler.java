@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 
 @ControllerAdvice
@@ -45,6 +46,14 @@ public class GlobalExceptionHandler {
         return "views/error";
     }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public String handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest request) {
+        String requestUri = request.getRequestURI();
+        String httpMethod = request.getMethod();
+        logger.error("Erreur 404 sur {} avec la méthode {} : ", requestUri, httpMethod, ex);
+        return "views/404";
+    }
+
     @ExceptionHandler(Exception.class)
     public String handleGeneralException(Exception ex, HttpServletRequest request) {
         String requestUri = request.getRequestURI();
@@ -52,4 +61,6 @@ public class GlobalExceptionHandler {
         logger.error("Erreur sur {} avec la méthode {} : ", requestUri, httpMethod, ex);
         return "views/error";
     }
+
+
 }
