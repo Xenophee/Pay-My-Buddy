@@ -48,9 +48,11 @@ public class TransactionsController {
         model.addAttribute("js", "/js/transactions.js");
     }
 
-    private void populateModel(HttpSession session, Model model, int page) {
+    public void populateModel(HttpSession session, Model model, int page) {
+
         UserSessionDTO userSession = SessionUtil.getUserSession(session);
-        accountService.getAccountByUserId(userSession.id()).ifPresent(account -> model.addAttribute("balance", account.getBalance() + " €"));
+
+        accountService.getAccountByUserId(userSession.id()).ifPresent(account -> model.addAttribute("balance", account.getBalance()));
         List<UserRelationshipProjection> relationships = relationshipService.getUserRelations(userSession.id());
 
         Pageable pageable = PageRequest.of(page, 10);

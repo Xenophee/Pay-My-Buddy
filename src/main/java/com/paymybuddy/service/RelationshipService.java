@@ -34,19 +34,19 @@ public class RelationshipService {
 
     public void addRelationship(UserSessionDTO requester, User receiver) {
 
-        if(requester.id() == receiver.getId()) {
+        if (requester.id() == receiver.getId()) {
             logger.warn("L'utilisateur {} ne peut pas être ami avec lui-même.", requester.username());
             throw new RelationshipsException("Vous ne pouvez pas être ami avec vous-même.");
-        }
-
-        if (relationshipRepository.existsByUserIdAndReceiverId(requester.id(), receiver.getId())) {
-            logger.warn("La relation existe déjà entre l'utilisateur {} et l'utilisateur {}", requester.username(), receiver.getUsername());
-            throw new RelationshipsException("La relation existe déjà.");
         }
 
         if (relationshipRepository.existsWaitingByUserIdAndReceiverId(requester.id(), receiver.getId())) {
             logger.warn("La relation est en attente entre l'utilisateur {} et l'utilisateur {}", requester.username(), receiver.getUsername());
             throw new RelationshipsException("La relation est en attente.");
+        }
+
+        if (relationshipRepository.existsByUserIdAndReceiverId(requester.id(), receiver.getId())) {
+            logger.warn("La relation existe déjà entre l'utilisateur {} et l'utilisateur {}", requester.username(), receiver.getUsername());
+            throw new RelationshipsException("La relation existe déjà.");
         }
 
         User user = new User();
