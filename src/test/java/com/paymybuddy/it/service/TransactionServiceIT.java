@@ -61,7 +61,6 @@ public class TransactionServiceIT {
 
     @Test
     @DisplayName("Ajout d'une transaction - succès")
-    @Commit
     public void testRegisterTransactionSuccess() {
 
         // Appelle le service pour enregistrer la transaction
