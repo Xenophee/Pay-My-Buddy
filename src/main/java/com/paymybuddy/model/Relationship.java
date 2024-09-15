@@ -1,27 +1,32 @@
 package com.paymybuddy.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 
 
-@Data
+@Getter
 @Entity
 @Table(name = "relationships")
 public class Relationship {
 
     @EmbeddedId
+    @Setter
     private RelationshipId id;
 
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "validated_at")
+    @Setter
     private LocalDateTime validatedAt;
 
 
-    @Data
+    @Getter
+    @Setter
     @Embeddable
     public static class RelationshipId {
 

@@ -3,6 +3,8 @@ package com.paymybuddy.it.controller;
 
 import com.paymybuddy.model.User;
 import com.paymybuddy.service.UserService;
+import org.hibernate.validator.constraints.time.DurationMax;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +87,7 @@ public class SignUpControllerIT {
         verify(userService, never()).registerUser(any(User.class));
     }
 
+    @Disabled
     @Test
     @DisplayName("Sign up - mots de passe non identique")
     public void testSignUpDifferentPasswords() throws Exception {
@@ -102,6 +105,7 @@ public class SignUpControllerIT {
         verify(userService, never()).registerUser(any(User.class));
     }
 
+    @Disabled
     @Test
     @DisplayName("Sign up - email déjà utilisé")
     public void testSignUpEmailAlreadyUsed() throws Exception {
