@@ -16,13 +16,13 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
 
     @Query("SELECT CASE WHEN COUNT(r) > 0 THEN TRUE ELSE FALSE END " +
             "FROM Relationship r " +
-            "WHERE (r.id.requester.id = :receiverId AND r.id.receiver.id = :userId) OR (r.id.requester.id = :userId AND r.id.receiver.id = :receiverId) AND r.validatedAt IS NOT NULL")
+            "WHERE ((r.id.requester.id = :receiverId AND r.id.receiver.id = :userId) OR (r.id.requester.id = :userId AND r.id.receiver.id = :receiverId)) AND r.validatedAt IS NOT NULL")
     boolean existsByUserIdAndReceiverId(@Param("userId") long userId, @Param("receiverId") long receiverId);
 
 
     @Query("SELECT CASE WHEN COUNT(r) > 0 THEN TRUE ELSE FALSE END " +
             "FROM Relationship r " +
-            "WHERE (r.id.requester.id = :receiverId AND r.id.receiver.id = :userId) OR (r.id.requester.id = :userId AND r.id.receiver.id = :receiverId) AND r.validatedAt IS NULL")
+            "WHERE ((r.id.requester.id = :receiverId AND r.id.receiver.id = :userId) OR (r.id.requester.id = :userId AND r.id.receiver.id = :receiverId)) AND r.validatedAt IS NULL")
     boolean existsWaitingByUserIdAndReceiverId(long userId, long receiverId);
 
 

@@ -63,7 +63,7 @@ public class RelationshipService {
 
     public void validateRelationship(long requesterId, long receiverId) {
         Relationship relationship = relationshipRepository.findByRequesterIdAndReceiverId(requesterId, receiverId)
-                .orElseThrow(() -> new RuntimeException("La relation n'existe pas."));
+                .orElseThrow(() -> new RelationshipsException("La relation n'existe pas."));
 
         relationship.setValidatedAt(LocalDateTime.now());
         relationshipRepository.save(relationship);
@@ -71,7 +71,7 @@ public class RelationshipService {
 
     public void deleteRelationship(long requesterId, long receiverId) {
         Relationship relationship = relationshipRepository.findByRequesterIdAndReceiverId(requesterId, receiverId)
-                .orElseThrow(() -> new RuntimeException("La relation n'existe pas."));
+                .orElseThrow(() -> new RelationshipsException("La relation n'existe pas."));
         relationshipRepository.delete(relationship);
     }
 

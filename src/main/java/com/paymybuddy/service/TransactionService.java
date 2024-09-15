@@ -4,7 +4,6 @@ package com.paymybuddy.service;
 import com.paymybuddy.dto.TransactionProjection;
 import com.paymybuddy.dto.UserSessionDTO;
 import com.paymybuddy.exception.TransactionsException;
-import com.paymybuddy.exception.UnexpectedNotFoundException;
 import com.paymybuddy.model.Account;
 import com.paymybuddy.model.Transaction;
 import com.paymybuddy.model.User;
@@ -37,11 +36,7 @@ public class TransactionService {
 
     public void registerTransaction(UserSessionDTO user, Transaction transaction) {
 
-        Account account = accountService.getAccountByUserId(user.id())
-                .orElseThrow(() -> {
-                    logger.error("Aucun compte trouvé pour l'utilisateur : {}", user);
-                    return new UnexpectedNotFoundException("Le compte n'existe pas.");
-                });
+        Account account = accountService.getAccountByUserId(user.id()).get();
 
         if (user.id() == transaction.getReceiver().getId()) {
             logger.warn("L'utilisateur ne peut pas s'envoyer de l'argent à lui-même : {}", user);

@@ -57,11 +57,6 @@ public class GlobalExceptionHandler {
         return "views/relationships";
     }
 
-    @ExceptionHandler(UnexpectedNotFoundException.class)
-    public String handleUnexpectedNotFoundException(UnexpectedNotFoundException ex) {
-        return "views/error";
-    }
-
     @ExceptionHandler(NoResourceFoundException.class)
     public String handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest request) {
         String requestUri = request.getRequestURI();

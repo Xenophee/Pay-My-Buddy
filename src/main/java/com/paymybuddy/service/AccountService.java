@@ -22,7 +22,7 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public Optional<Account> getAccountByUserId(Long id) {
+    public Optional<Account> getAccountByUserId(long id) {
         return accountRepository.findById(id);
     }
 }

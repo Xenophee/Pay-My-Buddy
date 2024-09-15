@@ -4,7 +4,6 @@ import com.paymybuddy.dto.UserProfile;
 import com.paymybuddy.dto.UserProfileUpdateDTO;
 import com.paymybuddy.dto.UserSessionDTO;
 import com.paymybuddy.exception.SignInException;
-import com.paymybuddy.exception.UnexpectedNotFoundException;
 import com.paymybuddy.model.User;
 import com.paymybuddy.repository.UserRepository;
 import com.paymybuddy.util.PasswordUtil;
@@ -13,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 
 import java.util.Optional;
@@ -38,18 +38,14 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(UserProfileUpdateDTO updatedUser, Long id) {
+    public User updateUser(UserProfileUpdateDTO updatedUser, long id) {
 
-        User user= userRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Aucun utilisateur trouvé avec l'ID : {}", id);
-                    return new UnexpectedNotFoundException("Utilisateur non trouvé.");
-                });
+        User user = userRepository.findById(id).get();
 
         user.setUsername(updatedUser.getUsername());
         user.setEmail(updatedUser.getEmail());
 
-        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+        if (StringUtils.hasText(updatedUser.getPassword())) {
             String hashedPassword = PasswordUtil.hashPassword(updatedUser.getPassword());
             user.setPassword(hashedPassword);
             user.setPasswordConfirmation(hashedPassword);
