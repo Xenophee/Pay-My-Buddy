@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 
@@ -43,18 +44,24 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TransactionsException.class)
-    public String handleTransactionsException(TransactionsException ex, Model model, HttpSession session, WebRequest request) {
+    public String handleTransactionsException(TransactionsException ex, Model model, HttpSession session) {
         model.addAttribute("errorMessage", ex.getMessage());
         transactionsController.populateModel(session, model, 0);
         model.addAttribute("Transaction", new Transaction());
         return "views/transactions";
     }
 
-    @ExceptionHandler(RelationshipsException.class)
-    public String handleRelationshipsException(RelationshipsException ex, Model model, HttpSession session) {
+    @ExceptionHandler(AddRelationshipsException.class)
+    public String handleAddRelationshipsException(AddRelationshipsException ex, Model model, HttpSession session) {
         model.addAttribute("errorMessage", ex.getMessage());
         relationshipsController.populateModel(model, session);
         return "views/relationships";
+    }
+
+    @ExceptionHandler(RelationshipsException.class)
+    public String handleRelationshipsException(RelationshipsException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        return "redirect:/relations";
     }
 
     @ExceptionHandler(NoResourceFoundException.class)

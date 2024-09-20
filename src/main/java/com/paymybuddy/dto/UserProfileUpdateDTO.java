@@ -21,7 +21,7 @@ public class UserProfileUpdateDTO implements UserProfile {
         private String email;
 
         @Pattern(
-                regexp = "^(|(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@#$!?%^&+=]).{8,})$",
+                regexp = "^(|(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$!?%^&+=]).{8,})$",
                 message = "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial (@#$!?%^&+=)"
         )
         private String password;
