@@ -27,9 +27,6 @@ public class SignInControllerIT {
     @MockBean
     private UserService userService;
 
-//    @MockBean
-//    private UserRepository userRepository;
-
 
     private static final long ID = 1;
     private static final String USERNAME = "Jean";

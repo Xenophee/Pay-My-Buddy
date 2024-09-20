@@ -3,8 +3,6 @@ package com.paymybuddy.it.controller;
 
 import com.paymybuddy.model.User;
 import com.paymybuddy.service.UserService;
-import org.hibernate.validator.constraints.time.DurationMax;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.validation.BindingResult;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -87,10 +86,23 @@ public class SignUpControllerIT {
         verify(userService, never()).registerUser(any(User.class));
     }
 
-    @Disabled
+
     @Test
     @DisplayName("Sign up - mots de passe non identique")
     public void testSignUpDifferentPasswords() throws Exception {
+
+        // Simule la vérification des mots de passe
+        doAnswer(invocation -> {
+            BindingResult result = invocation.getArgument(1);
+
+            // Ajoute les erreurs pour les champs password et passwordConfirmation
+            result.rejectValue("password", "error.user", "Les mots de passe ne correspondent pas.");
+            result.rejectValue("passwordConfirmation", "error.user", "Les mots de passe ne correspondent pas.");
+
+            return null;
+        }).when(userService).userVerification(any(User.class), any(BindingResult.class));
+
+
         // Simule la requête POST d'inscription avec des mots de passe différents
         mockMvc.perform(post(URL_SIGN_UP)
                         .param("username", USERNAME)
@@ -105,10 +117,20 @@ public class SignUpControllerIT {
         verify(userService, never()).registerUser(any(User.class));
     }
 
-    @Disabled
+
     @Test
     @DisplayName("Sign up - email déjà utilisé")
     public void testSignUpEmailAlreadyUsed() throws Exception {
+
+        // Simule l'existence d'un utilisateur avec la même adresse mail
+        doAnswer(invocation -> {
+            BindingResult result = invocation.getArgument(1);
+
+            // Ajoute l'erreur pour le champ email
+            result.rejectValue("email", "error.user", "Cette adresse mail est déjà utilisée.");
+
+            return null;
+        }).when(userService).userVerification(any(User.class), any(BindingResult.class));
 
         // Simule la requête POST d'inscription
         mockMvc.perform(post(URL_SIGN_UP)
@@ -119,6 +141,34 @@ public class SignUpControllerIT {
                 .andExpect(status().isOk()) // vérifie que le statut de la réponse est OK
                 .andExpect(view().name(VIEW_SIGN_UP)) // vérifie que la vue est bien celle attendue
                 .andExpect(model().attributeHasFieldErrors("user", "email")); // vérifie que le message d'erreur est bien présent
+
+        // Vérifie que la méthode registerUser n'est pas appelée
+        verify(userService, never()).registerUser(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Sign up - username déjà utilisé")
+    public void testSignUpUsernameAlreadyUsed() throws Exception {
+
+        // Simule l'existence d'un utilisateur avec le même nom d'utilisateur
+        doAnswer(invocation -> {
+            BindingResult result = invocation.getArgument(1);
+
+            // Ajoute l'erreur pour le champ username
+            result.rejectValue("username", "error.user", "Ce nom d'utilisateur existe déjà.");
+
+            return null;
+        }).when(userService).userVerification(any(User.class), any(BindingResult.class));
+
+        // Simule la requête POST d'inscription
+        mockMvc.perform(post(URL_SIGN_UP)
+                        .param("username", USERNAME)
+                        .param("email", EMAIL)
+                        .param("password", PASSWORD)
+                        .param("passwordConfirmation", PASSWORD))
+                .andExpect(status().isOk()) // vérifie que le statut de la réponse est OK
+                .andExpect(view().name(VIEW_SIGN_UP)) // vérifie que la vue est bien celle attendue
+                .andExpect(model().attributeHasFieldErrors("user", "username")); // vérifie que le message d'erreur est bien présent
 
         // Vérifie que la méthode registerUser n'est pas appelée
         verify(userService, never()).registerUser(any(User.class));
