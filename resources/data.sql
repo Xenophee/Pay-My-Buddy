@@ -22,7 +22,7 @@ VALUES ('Jean', 'jean@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1
        ('Paul', 'paul@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly'),
        ('Jacques', 'jacques@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly'),
        ('Denis', 'denis@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly'),
-       ('François', 'françois@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly');
+       ('Yannick', 'yannick@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly');
 -- ! Le mdp des utilisateurs est Abc123@!
 
 ---------------------------------------------------
@@ -97,7 +97,7 @@ VALUES ('Jean', 'jean@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1
        ('Paul', 'paul@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly'),
        ('Jacques', 'jacques@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly'),
        ('Denis', 'denis@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly'),
-       ('François', 'françois@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly');
+       ('Yannick', 'yannick@gmail.com', '$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly');
 -- ! Le mdp des utilisateurs est Abc123@!
 
 
