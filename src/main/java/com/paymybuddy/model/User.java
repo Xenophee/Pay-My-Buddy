@@ -44,14 +44,29 @@ public class User implements UserProfile {
     @Setter
     private String password;
 
+
+    /**
+     * The password confirmation for the user.
+     * This field is not persisted in the database.
+     */
     @Transient
     @NotEmpty(message = "Veuillez confirmer le mot de passe.")
     @Setter
     String passwordConfirmation;
 
+
+    /**
+     * The timestamp when the user was created.
+     * This field is automatically populated by the database.
+     */
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
+
+    /**
+     * The timestamp when the user was last updated.
+     * This field is automatically populated by the database.
+     */
     @Column(name = "updated_at", insertable = false, updatable = false)
     private LocalDateTime updatedAt;
 }

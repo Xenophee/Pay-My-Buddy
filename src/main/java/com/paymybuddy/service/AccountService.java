@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+
+/**
+ * Service class for managing accounts.
+ */
 @Service
 public class AccountService {
 
@@ -22,6 +26,12 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
+    /**
+     * Retrieves an account by the user ID.
+     *
+     * @param id the ID of the user
+     * @return an Optional containing the account if found, or empty if not
+     */
     public Optional<Account> getAccountByUserId(long id) {
         return accountRepository.findById(id);
     }

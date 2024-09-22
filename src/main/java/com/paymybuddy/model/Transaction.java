@@ -42,6 +42,10 @@ public class Transaction {
     @Setter
     private String description;
 
+    /**
+     * The timestamp when the transaction was processed.
+     * This field is automatically populated by the database.
+     */
     @Column(name = "processed_at", insertable = false, updatable = false)
     private LocalDateTime processedAt;
 

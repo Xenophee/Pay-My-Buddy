@@ -17,7 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-
+/**
+ * Service class for managing transactions.
+ */
 @Service
 public class TransactionService {
 
@@ -34,6 +36,13 @@ public class TransactionService {
         this.relationshipRepository = relationshipRepository;
     }
 
+    /**
+     * Registers a new transaction.
+     *
+     * @param user the user session data
+     * @param transaction the transaction to register
+     * @throws TransactionsException if the transaction is invalid
+     */
     public void registerTransaction(UserSessionDTO user, Transaction transaction) {
 
         Account account = accountService.getAccountByUserId(user.id()).get();
@@ -60,6 +69,13 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    /**
+     * Retrieves a paginated list of transactions for a user.
+     *
+     * @param userId the ID of the user
+     * @param pageable the pagination information
+     * @return a page of transaction projections
+     */
     public Page<TransactionProjection> getTransactions(long userId, Pageable pageable) {
         return transactionRepository.findAllByUserIdWithUsernames(userId, pageable);
     }

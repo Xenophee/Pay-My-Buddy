@@ -23,6 +23,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Optional;
 
 
+/**
+ * Controller class for handling profile-related requests.
+ */
 @Controller
 @RequestMapping("/profil")
 public class ProfileController {
@@ -38,12 +41,26 @@ public class ProfileController {
         this.userService = userService;
     }
 
+
+    /**
+     * Adds common attributes to the model.
+     *
+     * @param model the model to add attributes to
+     */
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("title", "Mon profil - Pay My Buddy");
     }
 
 
+    /**
+     * Handles GET requests to the /profil endpoint.
+     * Populates the model with user profile data.
+     *
+     * @param session the HTTP session
+     * @param model the model to populate
+     * @return the view name
+     */
     @GetMapping
     public String profile(HttpSession session, Model model) {
 
@@ -58,6 +75,17 @@ public class ProfileController {
         return PROFILE_VIEW;
     }
 
+
+    /**
+     * Handles POST requests to the /profil endpoint.
+     * Updates the user profile with the provided data.
+     *
+     * @param userUpdate the user profile update data
+     * @param result the binding result for validation
+     * @param model the model to populate
+     * @param session the HTTP session
+     * @return the view name
+     */
     @PostMapping
     public String updateUserProfile(@ModelAttribute("user") @Valid UserProfileUpdateDTO userUpdate,
                                     BindingResult result,

@@ -11,6 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
+/**
+ * Controller class for handling sign-in related requests.
+ */
 @Controller
 @RequestMapping("/sign-in")
 public class SignInController {
@@ -27,16 +30,39 @@ public class SignInController {
         this.userService = userService;
     }
 
+
+    /**
+     * Adds common attributes to the model.
+     *
+     * @param model the model to add attributes to
+     */
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("title", "Se connecter - Pay My Buddy");
     }
 
+
+    /**
+     * Handles GET requests to the /sign-in endpoint.
+     *
+     * @return the view name
+     */
     @GetMapping
     public String signIn() {
         return SIGN_IN_VIEW;
     }
 
+
+    /**
+     * Handles POST requests to the /sign-in endpoint.
+     * Authenticates the user and creates a session.
+     *
+     * @param email the user's email
+     * @param password the user's password
+     * @param session the HTTP session
+     * @param model the model to populate
+     * @return the redirect URL after sign-in
+     */
     @PostMapping
     public String signIn(
             @RequestParam String email,

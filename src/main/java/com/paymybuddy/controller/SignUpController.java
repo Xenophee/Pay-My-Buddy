@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
+/**
+ * Controller class for handling sign-up related requests.
+ */
 @Controller
 @RequestMapping("/sign-up")
 public class SignUpController {
@@ -32,18 +35,39 @@ public class SignUpController {
         this.userService = userService;
     }
 
+
+    /**
+     * Adds common attributes to the model.
+     *
+     * @param model the model to add attributes to
+     */
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("title", "S'inscrire - Pay My Buddy");
     }
 
 
+    /**
+     * Handles GET requests to the /sign-up endpoint.
+     *
+     * @param model the model to populate
+     * @return the view name
+     */
     @GetMapping
     public String signUp(Model model) {
         model.addAttribute("user", new User());
         return SIGN_UP_VIEW;
     }
 
+
+    /**
+     * Handles POST requests to the /sign-up endpoint.
+     *
+     * @param user the user to register
+     * @param result the binding result for validation
+     * @param redirectAttributes the redirect attributes for flash messages
+     * @return the view name
+     */
     @PostMapping
     public String registerUser(@ModelAttribute("user") @Valid User user,
                                BindingResult result,

@@ -17,25 +17,17 @@ public class Relationship {
     @Setter
     private RelationshipId id;
 
+    /**
+     * The timestamp when the relationship was created.
+     * This field is automatically populated by the database.
+     */
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    /**
+     * The timestamp when the relationship was validated.
+     */
     @Column(name = "validated_at")
     @Setter
     private LocalDateTime validatedAt;
-
-
-    @Getter
-    @Setter
-    @Embeddable
-    public static class RelationshipId {
-
-        @ManyToOne
-        @JoinColumn(name = "requester_id", referencedColumnName = "id")
-        private User requester;
-
-        @ManyToOne
-        @JoinColumn(name = "receiver_id", referencedColumnName = "id")
-        private User receiver;
-    }
 }

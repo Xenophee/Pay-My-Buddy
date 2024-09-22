@@ -21,6 +21,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Optional;
 
 
+/**
+ * Controller class for handling relationship-related requests.
+ */
 @Controller
 @RequestMapping("/relations")
 public class RelationshipsController {
@@ -39,11 +42,23 @@ public class RelationshipsController {
         this.relationshipService = relationshipService;
     }
 
+    /**
+     * Adds common attributes to the model.
+     *
+     * @param model the model to add attributes to
+     */
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("title", "Mes relations - Pay My Buddy");
     }
 
+
+    /**
+     * Populates the model with user relationships.
+     *
+     * @param model the model to populate
+     * @param session the HTTP session
+     */
     public void populateModel(Model model, HttpSession session) {
         UserSessionDTO userSession = SessionUtil.getUserSession(session);
 
@@ -52,6 +67,13 @@ public class RelationshipsController {
     }
 
 
+    /**
+     * Handles GET requests to the /relations endpoint.
+     *
+     * @param session the HTTP session
+     * @param model the model to populate
+     * @return the view name
+     */
     @GetMapping
     public String getRelationships(HttpSession session, Model model) {
 
@@ -63,6 +85,14 @@ public class RelationshipsController {
     }
 
 
+    /**
+     * Handles DELETE requests to remove a relationship.
+     *
+     * @param deleteRelationship the ID of the relationship to delete
+     * @param session the HTTP session
+     * @param redirectAttributes the redirect attributes for flash messages
+     * @return the redirect URL after deletion
+     */
     @DeleteMapping(params = {"deleteRelationship"})
     public String deleteRelationship(
             @RequestParam long deleteRelationship,
@@ -85,6 +115,14 @@ public class RelationshipsController {
     }
 
 
+    /**
+     * Handles PUT requests to accept a waiting relationship.
+     *
+     * @param requesterId the ID of the user who requested the relationship
+     * @param session the HTTP session
+     * @param redirectAttributes the redirect attributes for flash messages
+     * @return the redirect URL after acceptance
+     */
     @PutMapping("/accept")
     public String acceptWaitingRelationship(
             @RequestParam long requesterId,
@@ -106,6 +144,14 @@ public class RelationshipsController {
     }
 
 
+    /**
+     * Handles DELETE requests to remove a waiting relationship.
+     *
+     * @param requesterId the ID of the user who requested the relationship
+     * @param session the HTTP session
+     * @param redirectAttributes the redirect attributes for flash messages
+     * @return the redirect URL after deletion
+     */
     @DeleteMapping("/delete")
     public String deleteWaitingRelationship(
             @RequestParam long requesterId,
@@ -127,6 +173,14 @@ public class RelationshipsController {
     }
 
 
+    /**
+     * Handles POST requests to add a new relationship.
+     *
+     * @param email the email of the user to add
+     * @param session the HTTP session
+     * @param model the model to populate
+     * @return the view name
+     */
     @PostMapping
     public String addRelationship(
             @RequestParam String email,

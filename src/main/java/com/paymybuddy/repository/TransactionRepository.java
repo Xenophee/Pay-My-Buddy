@@ -11,9 +11,19 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
+/**
+ * Repository interface for managing Transaction entities.
+ */
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
+    /**
+     * Finds all transactions for a user with associated usernames.
+     *
+     * @param userId the ID of the user
+     * @param pageable the pagination information
+     * @return a page of transaction projections
+     */
     @Query("SELECT " +
             "CASE WHEN t.sender.id = :userId THEN COALESCE(r.username, 'Anonyme') ELSE COALESCE(s.username, 'Anonyme') END AS username, " +
             "CASE WHEN t.sender.id = :userId THEN true ELSE false END AS isSender, " +

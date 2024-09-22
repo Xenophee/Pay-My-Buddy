@@ -23,6 +23,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+/**
+ * Controller class for handling transaction-related requests.
+ */
 @Controller
 @RequestMapping("/transactions")
 public class TransactionsController {
@@ -42,12 +46,26 @@ public class TransactionsController {
         this.accountService = accountService;
     }
 
+
+    /**
+     * Adds common attributes to the model.
+     *
+     * @param model the model to add attributes to
+     */
     @ModelAttribute
     public void addAttributes(Model model) {
         model.addAttribute("title", "Mes transactions - Pay My Buddy");
         model.addAttribute("js", "/js/transactions.js");
     }
 
+
+    /**
+     * Populates the model with user session data, account balance, relationships, and transactions.
+     *
+     * @param session the HTTP session
+     * @param model the model to populate
+     * @param page the page number for pagination
+     */
     public void populateModel(HttpSession session, Model model, int page) {
 
         UserSessionDTO userSession = SessionUtil.getUserSession(session);
@@ -63,6 +81,14 @@ public class TransactionsController {
     }
 
 
+    /**
+     * Handles GET requests to the /transactions endpoint.
+     *
+     * @param page the page number for pagination
+     * @param session the HTTP session
+     * @param model the model to populate
+     * @return the view name
+     */
     @GetMapping
     public String transactions(
             @RequestParam(defaultValue = "0") int page,
@@ -79,6 +105,15 @@ public class TransactionsController {
     }
 
 
+    /**
+     * Handles POST requests to the /transactions endpoint.
+     *
+     * @param transaction the transaction to register
+     * @param result the binding result for validation
+     * @param session the HTTP session
+     * @param model the model to populate
+     * @return the view name
+     */
     @PostMapping
     public String transactions(
             @ModelAttribute("Transaction") @Valid Transaction transaction,
