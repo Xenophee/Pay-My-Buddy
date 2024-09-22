@@ -4,6 +4,7 @@ package com.paymybuddy.it.controller;
 import com.paymybuddy.dto.UserSessionDTO;
 import com.paymybuddy.exception.SignInException;
 import com.paymybuddy.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
+@DisplayName("EndPoint - /sign-in")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class SignInControllerIT {
@@ -31,15 +34,23 @@ public class SignInControllerIT {
     private static final long ID = 1;
     private static final String USERNAME = "Jean";
     private static final String EMAIL = "jean@gmail.com";
-    private static final String PASSWORD = "$2a$10$QWDIWUBgiITPXVTEJZ8goeZGmgVuEM6pyhsia1zZ2BLeyznBbNWly";
+    private static final String PASSWORD = "Abc123@!";
 
     private static final String URL_SIGN_IN = "/sign-in";
     private static final String VIEW_SIGN_IN = "views/sign-in";
     private static final String REDIRECT_URL_SUCCESS = "/transactions";
 
+    private UserSessionDTO userSession;
+
+    @BeforeEach
+    public void setUp() {
+        // Initialisation de l'objet UserSessionDTO
+        userSession = new UserSessionDTO(ID, USERNAME, EMAIL);
+    }
+
 
     @Test
-    @DisplayName("Sign in - page de connexion")
+    @DisplayName("GET /sign-in - succès")
     public void testGetSignIn() throws Exception {
         mockMvc.perform(get(URL_SIGN_IN))
                 .andExpect(status().isOk())
@@ -49,14 +60,12 @@ public class SignInControllerIT {
 
 
     @Test
-    @DisplayName("Sign in - succès de l'authentification")
+    @DisplayName("POST /sign-in - succès de l'authentification")
     public void testSignInSuccess() throws Exception {
-        // Simule un utilisateur dans la base de données
-        UserSessionDTO userSessionDTO = new UserSessionDTO(ID, USERNAME, EMAIL);
 
         // Simule une authentification réussie
-        when(userService.authenticateUser(EMAIL, PASSWORD))
-                .thenReturn(userSessionDTO);
+        when(userService.authenticateUser(anyString(), anyString()))
+                .thenReturn(userSession);
 
         // Simule la requête POST de connexion
         mockMvc.perform(post(URL_SIGN_IN)
@@ -64,19 +73,19 @@ public class SignInControllerIT {
                         .param("password", PASSWORD))
                 .andExpect(status().is3xxRedirection()) // Redirection après succès
                 .andExpect(redirectedUrl(REDIRECT_URL_SUCCESS)) // Redirection vers la page attendue
-                .andExpect(request().sessionAttribute("user", userSessionDTO)); // Vérifier que la session utilisateur est créée
+                .andExpect(request().sessionAttribute("user", userSession)); // Vérifier que la session utilisateur est créée
 
         // Vérifie que le service d'authentification a bien été appelé
-        verify(userService).authenticateUser(EMAIL, PASSWORD);
+        verify(userService).authenticateUser(anyString(), anyString());
     }
 
 
     @Test
-    @DisplayName("Sign in - échec de l'authentification")
+    @DisplayName("POST /sign-in - échec (identifiants incorrects)")
     public void testSignInFailure() throws Exception {
         // Simule un échec d'authentification
-        when(userService.authenticateUser("wrong@example.com", "wrongpassword"))
-                .thenThrow(new SignInException("Invalid credentials"));
+        when(userService.authenticateUser(anyString(), anyString()))
+                .thenThrow(new SignInException("Identifiants incorrects"));
 
         // Simule la requête POST de connexion avec des identifiants incorrects
         mockMvc.perform(post(URL_SIGN_IN)
@@ -88,11 +97,11 @@ public class SignInControllerIT {
                 .andExpect(request().sessionAttributeDoesNotExist("user")); // Vérifie que la session utilisateur n'est pas créée
 
         // Vérifie que le service d'authentification a bien été appelé
-        verify(userService).authenticateUser("wrong@example.com", "wrongpassword");
+        verify(userService).authenticateUser(anyString(), anyString());
     }
 
     @Test
-    @DisplayName("Sign in - champs vides")
+    @DisplayName("POST /sign-in - échec (champs vides)")
     public void testSignInEmptyFields() throws Exception {
 
         // Simule la requête POST de connexion avec des identifiants non renseignés

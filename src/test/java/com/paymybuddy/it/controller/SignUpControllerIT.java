@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
+@DisplayName("EndPoint - /sign-up")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class SignUpControllerIT {
@@ -39,7 +40,7 @@ public class SignUpControllerIT {
 
 
     @Test
-    @DisplayName("Sign up - page d'inscription")
+    @DisplayName("GET /sign-up - succès")
     public void testGetSignUp() throws Exception {
         mockMvc.perform(get(URL_SIGN_UP))
                 .andExpect(status().isOk())
@@ -49,7 +50,7 @@ public class SignUpControllerIT {
 
 
     @Test
-    @DisplayName("Sign up - succès de l'inscription")
+    @DisplayName("POST /sign-up - succès de l'inscription")
     public void testSignUpSuccess() throws Exception {
 
         // Simule l'inscription d'un utilisateur
@@ -70,7 +71,7 @@ public class SignUpControllerIT {
     }
 
     @Test
-    @DisplayName("Sign up - champs vides")
+    @DisplayName("POST /sign-up - échec (champs vides)")
     public void testSignUpEmptyFields() throws Exception {
         // Simule la requête POST d'inscription avec des champs vides
         mockMvc.perform(post(URL_SIGN_UP)
@@ -88,7 +89,7 @@ public class SignUpControllerIT {
 
 
     @Test
-    @DisplayName("Sign up - mots de passe non identique")
+    @DisplayName("POST /sign-up - échec (mots de passe non identique)")
     public void testSignUpDifferentPasswords() throws Exception {
 
         // Simule la vérification des mots de passe
@@ -119,7 +120,7 @@ public class SignUpControllerIT {
 
 
     @Test
-    @DisplayName("Sign up - email déjà utilisé")
+    @DisplayName("POST /sign-up - échec (email déjà utilisé)")
     public void testSignUpEmailAlreadyUsed() throws Exception {
 
         // Simule l'existence d'un utilisateur avec la même adresse mail
@@ -147,7 +148,7 @@ public class SignUpControllerIT {
     }
 
     @Test
-    @DisplayName("Sign up - username déjà utilisé")
+    @DisplayName("POST /sign-up - échec (username déjà utilisé)")
     public void testSignUpUsernameAlreadyUsed() throws Exception {
 
         // Simule l'existence d'un utilisateur avec le même nom d'utilisateur

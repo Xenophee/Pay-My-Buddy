@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
+@DisplayName("EndPoint - /sign-out")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class SignOutControllerIT {
@@ -21,7 +22,7 @@ public class SignOutControllerIT {
     private MockMvc mockMvc;
 
     @Test
-    @DisplayName("Sign out - succès de la déconnexion")
+    @DisplayName("GET /sign-out - succès de la déconnexion")
     public void testSignOut() throws Exception {
         // Simule une session utilisateur à déconnecter
         HttpSession session = mockMvc.perform(get("/sign-out")

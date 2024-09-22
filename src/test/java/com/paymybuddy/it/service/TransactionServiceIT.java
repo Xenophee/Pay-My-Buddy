@@ -76,7 +76,7 @@ public class TransactionServiceIT {
 
     @Test
     @DisplayName("Ajout d'une transaction - échec (destinataire identique à l'expéditeur)")
-    public void registerTransactionSelfTransaction() {
+    public void registerTransactionFailureSelfTransaction() {
         transaction.getReceiver().setId(userSession.id());
         assertThrows(TransactionsException.class, () -> transactionService.registerTransaction(userSession, transaction));
     }
@@ -85,7 +85,7 @@ public class TransactionServiceIT {
     @ParameterizedTest
     @ValueSource(longs = {3, 6})
     @DisplayName("Ajout d'une transaction - échec (destinataire non en relation ou en attente)")
-    public void registerTransactionNoRelationship(long receiverId) {
+    public void registerTransactionFailureNoRelationship(long receiverId) {
         transaction.getReceiver().setId(receiverId);
         assertThrows(TransactionsException.class, () -> transactionService.registerTransaction(userSession, transaction));
     }
@@ -93,7 +93,7 @@ public class TransactionServiceIT {
 
     @Test
     @DisplayName("Ajout d'une transaction - échec (solde insuffisant)")
-    public void registerTransactionInsufficientBalance() {
+    public void registerTransactionFailureInsufficientBalance() {
         transaction.setAmount(2000.0);
         assertThrows(TransactionsException.class, () -> transactionService.registerTransaction(userSession, transaction));
     }

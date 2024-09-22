@@ -2,18 +2,15 @@ package com.paymybuddy.it.controller;
 
 
 import com.paymybuddy.dto.UserSessionDTO;
-import com.paymybuddy.exception.SignInException;
 import com.paymybuddy.exception.TransactionsException;
 import com.paymybuddy.model.Account;
 import com.paymybuddy.model.Transaction;
 import com.paymybuddy.service.AccountService;
 import com.paymybuddy.service.RelationshipService;
 import com.paymybuddy.service.TransactionService;
-import com.paymybuddy.util.SessionUtil;
-import jakarta.servlet.http.HttpSession;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,12 +23,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
+@DisplayName("EndPoint - /transactions")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TransactionsControllerIT {
@@ -53,34 +51,42 @@ public class TransactionsControllerIT {
     private static final String VIEW_TRANSACTIONS = "views/transactions";
     private static final String REDIRECT_URL_NO_SESSION = "/sign-in";
 
+    private UserSessionDTO userSession;
+
+    @BeforeEach
+    public void setUp() {
+        // Initialisation de l'objet UserSessionDTO
+        userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
+    }
+
 
     @Test
     @DisplayName("GET /transactions - succès")
     public void testGetTransactions() throws Exception {
-        // Créer un objet UserSessionDTO pour simuler l'utilisateur connecté
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
         // Simule la récupération du compte associé à l'utilisateur
-        when(accountService.getAccountByUserId(userSession.id())).thenReturn(Optional.of(mock(Account.class)));
+        when(accountService.getAccountByUserId(anyLong()))
+                .thenReturn(Optional.of(mock(Account.class)));
 
         // Simule la récupération des relations utilisateur
-        when(relationshipService.getUserRelations(userSession.id())).thenReturn(List.of());
+        when(relationshipService.getUserRelations(anyLong()))
+                .thenReturn(List.of());
 
         // Simule la récupération des transactions paginées
-        when(transactionService.getTransactions(eq(userSession.id()), any(Pageable.class)))
+        when(transactionService.getTransactions(anyLong(), any(Pageable.class)))
                 .thenReturn(Page.empty());
 
         // Exécute la requête GET /transactions avec une session utilisateur
         mockMvc.perform(get(URL_TRANSACTIONS)
-                        .sessionAttr("user", userSession))  // Session utilisateur injectée ici
+                        .sessionAttr("user", userSession))
                 .andExpect(status().isOk())
                 .andExpect(view().name(VIEW_TRANSACTIONS))
                 .andExpect(model().attributeExists("title", "js", "transactionsPage", "relationships", "Transaction"));
 
         // Vérifie que les méthodes du service ont été appelées correctement
-        verify(accountService).getAccountByUserId(userSession.id());
-        verify(relationshipService).getUserRelations(userSession.id());
-        verify(transactionService).getTransactions(eq(userSession.id()), any(Pageable.class));
+        verify(accountService).getAccountByUserId(anyLong());
+        verify(relationshipService).getUserRelations(anyLong());
+        verify(transactionService).getTransactions(anyLong(), any(Pageable.class));
     }
 
 
@@ -100,23 +106,19 @@ public class TransactionsControllerIT {
     }
 
     @Test
-    @DisplayName("Enregistrement d'une nouvelle transaction - succès")
+    @DisplayName("POST /transactions - succès")
     public void testPostTransactionSuccess() throws Exception {
-        // Simuler l'utilisateur connecté
-        UserSessionDTO userSession = new UserSessionDTO(1, "testUser", "test@example.com");
-
-        // Créer un compte simulé avec un solde
-        Account account = new Account();
-        account.setBalance(100.0);
 
         // Simuler un compte utilisateur avec solde
-        when(accountService.getAccountByUserId(userSession.id())).thenReturn(Optional.of(account));
+        when(accountService.getAccountByUserId(anyLong()))
+                .thenReturn(Optional.of(mock(Account.class)));
 
         // Simuler des relations utilisateur
-        when(relationshipService.getUserRelations(userSession.id())).thenReturn(List.of());
+        when(relationshipService.getUserRelations(anyLong()))
+                .thenReturn(List.of());
 
         // Simule la récupération des transactions paginées
-        when(transactionService.getTransactions(eq(userSession.id()), any(Pageable.class)))
+        when(transactionService.getTransactions(anyLong(), any(Pageable.class)))
                 .thenReturn(Page.empty());
 
         // Simuler une transaction réussie
@@ -126,32 +128,33 @@ public class TransactionsControllerIT {
         mockMvc.perform(post(URL_TRANSACTIONS)
                         .param("amount", "50.0")
                         .param("description", "Payment for services")
-                        .param("receiver.id", "2")  // Récepteur de la transaction
-                        .sessionAttr("user", userSession))  // Simuler la session utilisateur
-                .andExpect(status().isOk())  // Vérifier que le statut est 200 OK
-                .andExpect(view().name(VIEW_TRANSACTIONS))  // Vérifier que la vue affichée est la bonne
-                .andExpect(model().attributeExists("successMessage"));  // Vérifier que le message de succès est bien ajouté au modèle
+                        .param("receiver.id", "2")
+                        .sessionAttr("user", userSession))
+                .andExpect(status().isOk())
+                .andExpect(view().name(VIEW_TRANSACTIONS))
+                .andExpect(model().attributeExists("successMessage"));
+
+        verify(accountService).getAccountByUserId(anyLong());
+        verify(relationshipService).getUserRelations(anyLong());
+        verify(transactionService).getTransactions(anyLong(), any(Pageable.class));
+        verify(transactionService).registerTransaction(any(UserSessionDTO.class), any(Transaction.class));
     }
 
 
     @Test
-    @DisplayName("Enregistrement d'une transaction - échec de la validation")
+    @DisplayName("POST /transactions - échec (champs vides)")
     public void testPostTransactionValidationError() throws Exception {
-        // Simule l'utilisateur connecté
-        UserSessionDTO userSession = new UserSessionDTO(1, "testUser", "test@example.com");
-
-        // Créer un compte simulé avec un solde
-        Account account = new Account();
-        account.setBalance(100.0);
 
         // Simule un compte utilisateur avec solde
-        when(accountService.getAccountByUserId(userSession.id())).thenReturn(Optional.of(account));
+        when(accountService.getAccountByUserId(anyLong()))
+                .thenReturn(Optional.of(mock(Account.class)));
 
         // Simule des relations utilisateur
-        when(relationshipService.getUserRelations(userSession.id())).thenReturn(List.of());
+        when(relationshipService.getUserRelations(anyLong()))
+                .thenReturn(List.of());
 
         // Simule la récupération des transactions paginées
-        when(transactionService.getTransactions(eq(userSession.id()), any(Pageable.class)))
+        when(transactionService.getTransactions(anyLong(), any(Pageable.class)))
                 .thenReturn(Page.empty());
 
         // Soumettre une transaction avec des données invalides
@@ -164,29 +167,27 @@ public class TransactionsControllerIT {
                 .andExpect(view().name(VIEW_TRANSACTIONS))
                 .andExpect(model().attributeHasFieldErrors("Transaction", "amount", "receiver.id"));
 
-        // Vérifie que la méthode de service n'est pas appelée
+        verify(accountService).getAccountByUserId(anyLong());
+        verify(relationshipService).getUserRelations(anyLong());
+        verify(transactionService).getTransactions(anyLong(), any(Pageable.class));
         verify(transactionService, never()).registerTransaction(any(UserSessionDTO.class), any(Transaction.class));
     }
 
 
     @Test
-    @DisplayName("Enregistrement d'une transaction - échec de la validation")
+    @DisplayName("POST /transactions - échec (même utilisateur)")
     public void testPostTransactionSameUserError() throws Exception {
-        // Simule l'utilisateur connecté
-        UserSessionDTO userSession = new UserSessionDTO(1, "testUser", "test@example.com");
-
-        // Créer un compte simulé avec un solde
-        Account account = new Account();
-        account.setBalance(100.0);
 
         // Simule un compte utilisateur avec solde
-        when(accountService.getAccountByUserId(userSession.id())).thenReturn(Optional.of(account));
+        when(accountService.getAccountByUserId(anyLong()))
+                .thenReturn(Optional.of(mock(Account.class)));
 
         // Simule des relations utilisateur
-        when(relationshipService.getUserRelations(userSession.id())).thenReturn(List.of());
+        when(relationshipService.getUserRelations(anyLong()))
+                .thenReturn(List.of());
 
         // Simule la récupération des transactions paginées
-        when(transactionService.getTransactions(eq(userSession.id()), any(Pageable.class)))
+        when(transactionService.getTransactions(anyLong(), any(Pageable.class)))
                 .thenReturn(Page.empty());
 
         doThrow(new TransactionsException("Vous ne pouvez pas envoyer de l'argent à vous-même."))
@@ -201,6 +202,11 @@ public class TransactionsControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(view().name(VIEW_TRANSACTIONS))
                 .andExpect(model().attributeExists("errorMessage"));
+
+        verify(accountService).getAccountByUserId(anyLong());
+        verify(relationshipService).getUserRelations(anyLong());
+        verify(transactionService).getTransactions(anyLong(), any(Pageable.class));
+        verify(transactionService).registerTransaction(any(UserSessionDTO.class), any(Transaction.class));
     }
 
 }

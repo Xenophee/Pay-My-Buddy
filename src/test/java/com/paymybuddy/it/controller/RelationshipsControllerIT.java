@@ -7,6 +7,7 @@ import com.paymybuddy.exception.RelationshipsException;
 import com.paymybuddy.model.User;
 import com.paymybuddy.service.RelationshipService;
 import com.paymybuddy.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
+@DisplayName("EndPoint - /relations")
 @SpringBootTest
 @AutoConfigureMockMvc
 public class RelationshipsControllerIT {
@@ -42,17 +45,22 @@ public class RelationshipsControllerIT {
     private static final String VIEW_RELATIONS = "views/relationships";
     private static final String RELATIONS_REDIRECT = "/relations";
     private static final String REDIRECT_URL_NO_SESSION = "/sign-in";
-    @Autowired
-    private RelationshipsController relationshipsController;
+
+    private UserSessionDTO userSession;
+
+    @BeforeEach
+    public void setUp() {
+        // Initialisation de l'objet UserSessionDTO
+        userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
+    }
 
 
     @Test
     @DisplayName("GET /relations - succès")
     public void testGetRelationships() throws Exception {
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
-        when(relationshipService.getUserRelations(userSession.id())).thenReturn(List.of());
-        when(relationshipService.getWaitingUserRelations(userSession.id())).thenReturn(List.of());
+        when(relationshipService.getUserRelations(anyLong())).thenReturn(List.of());
+        when(relationshipService.getWaitingUserRelations(anyLong())).thenReturn(List.of());
 
         mockMvc.perform(get(URL_RELATIONS)
                         .sessionAttr("user", userSession))
@@ -60,8 +68,8 @@ public class RelationshipsControllerIT {
                 .andExpect(view().name(VIEW_RELATIONS))
                 .andExpect(model().attributeExists("title", "userRelations", "waitingUserRelations"));
 
-        verify(relationshipService).getUserRelations(userSession.id());
-        verify(relationshipService).getWaitingUserRelations(userSession.id());
+        verify(relationshipService).getUserRelations(anyLong());
+        verify(relationshipService).getWaitingUserRelations(anyLong());
     }
 
     @Test
@@ -71,13 +79,14 @@ public class RelationshipsControllerIT {
         mockMvc.perform(get(URL_RELATIONS))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl(REDIRECT_URL_NO_SESSION));
+
+        verifyNoInteractions(relationshipService);
     }
 
 
     @Test
     @DisplayName("POST /relations - succès")
     public void testAddRelationship() throws Exception {
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
         when(userService.getUserByEmail(anyString())).thenReturn(Optional.of(mock(User.class)));
         doNothing().when(relationshipService).addRelationship(any(UserSessionDTO.class), any(User.class));
@@ -89,13 +98,12 @@ public class RelationshipsControllerIT {
                 .andExpect(view().name(VIEW_RELATIONS))
                 .andExpect(model().attributeExists("successMessage", "title", "userRelations", "waitingUserRelations"));
 
-        verify(relationshipService).addRelationship(eq(userSession), any(User.class));
+        verify(relationshipService).addRelationship(any(UserSessionDTO.class), any(User.class));
     }
 
     @Test
     @DisplayName("POST /relations - échec (utilisateur non trouvé)")
     public void testAddRelationshipUserNotFound() throws Exception {
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
         when(userService.getUserByEmail(anyString())).thenReturn(Optional.empty());
 
@@ -112,27 +120,26 @@ public class RelationshipsControllerIT {
     @Test
     @DisplayName("POST /relations - échec (même utilisateur)")
     public void testAddRelationshipSameUserAsSession() throws Exception {
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
         when(userService.getUserByEmail(anyString())).thenReturn(Optional.of(mock(User.class)));
         doThrow(new AddRelationshipsException("Vous ne pouvez pas être ami avec vous-même.")).when(relationshipService).addRelationship(any(UserSessionDTO.class), any(User.class));
 
         mockMvc.perform(post(URL_RELATIONS)
-                        .param("email", "jean@gmail.com")
+                        .param("email", userSession.email())
                         .sessionAttr("user", userSession))
                 .andExpect(status().isOk())
                 .andExpect(view().name(VIEW_RELATIONS))
                 .andExpect(model().attributeExists("errorMessage", "userRelations", "waitingUserRelations"));
 
-        verify(relationshipService).addRelationship(eq(userSession), any(User.class));
+        verify(relationshipService).addRelationship(any(UserSessionDTO.class), any(User.class));
     }
+
 
     @Test
     @DisplayName("PUT /relations/accept - succès")
     public void testAcceptWaitingRelationship() throws Exception {
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
-        doNothing().when(relationshipService).validateRelationship(2, userSession.id());
+        doNothing().when(relationshipService).validateRelationship(anyLong(), anyLong());
 
         mockMvc.perform(put(URL_RELATIONS + "/accept")
                         .param("requesterId", "2")
@@ -141,15 +148,15 @@ public class RelationshipsControllerIT {
                 .andExpect(redirectedUrl(RELATIONS_REDIRECT))
                 .andExpect(flash().attributeExists("successMessage"));
 
-        verify(relationshipService).validateRelationship(2, userSession.id());
+        verify(relationshipService).validateRelationship(anyLong(), anyLong());
     }
+
 
     @Test
     @DisplayName("PUT /relations/accept - échec (relation inexistante)")
     public void testAcceptWaitingRelationshipFailure() throws Exception {
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
-        doThrow(new RelationshipsException("La relation n'existe pas.")).when(relationshipService).validateRelationship(2, userSession.id());
+        doThrow(new RelationshipsException("La relation n'existe pas.")).when(relationshipService).validateRelationship(anyLong(), anyLong());
 
         mockMvc.perform(put(URL_RELATIONS + "/accept")
                         .param("requesterId", "2")
@@ -158,15 +165,14 @@ public class RelationshipsControllerIT {
                 .andExpect(redirectedUrl(RELATIONS_REDIRECT))
                 .andExpect(flash().attributeExists("errorMessage"));
 
-        verify(relationshipService).validateRelationship(2, userSession.id());
+        verify(relationshipService).validateRelationship(anyLong(), anyLong());
     }
 
     @Test
     @DisplayName("DELETE /relations/delete - succès")
     public void testDeleteWaitingRelationship() throws Exception {
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
-        doNothing().when(relationshipService).deleteRelationship(2, userSession.id());
+        doNothing().when(relationshipService).deleteRelationship(anyLong(), anyLong());
 
         mockMvc.perform(delete(URL_RELATIONS + "/delete")
                         .param("requesterId", "2")
@@ -175,15 +181,14 @@ public class RelationshipsControllerIT {
                 .andExpect(redirectedUrl(RELATIONS_REDIRECT))
                 .andExpect(flash().attributeExists("successMessage"));
 
-        verify(relationshipService).deleteRelationship(2, userSession.id());
+        verify(relationshipService).deleteRelationship(anyLong(), anyLong());
     }
 
     @Test
     @DisplayName("DELETE /relations/delete - échec (relation inexistante)")
     public void testDeleteWaitingRelationshipFailure() throws Exception {
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
-        doThrow(new RelationshipsException("La relation n'existe pas.")).when(relationshipService).deleteRelationship(2, userSession.id());
+        doThrow(new RelationshipsException("La relation n'existe pas.")).when(relationshipService).deleteRelationship(anyLong(), anyLong());
 
         mockMvc.perform(delete(URL_RELATIONS + "/delete")
                         .param("requesterId", "2")
@@ -192,15 +197,14 @@ public class RelationshipsControllerIT {
                 .andExpect(redirectedUrl(RELATIONS_REDIRECT))
                 .andExpect(flash().attributeExists("errorMessage"));
 
-        verify(relationshipService).deleteRelationship(2, userSession.id());
+        verify(relationshipService).deleteRelationship(anyLong(), anyLong());
     }
 
     @Test
     @DisplayName("DELETE /relations - succès")
     public void testDeleteRelationship() throws Exception {
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
-        doNothing().when(relationshipService).deleteRelationship(userSession.id(), 2);
+        doNothing().when(relationshipService).deleteRelationship(anyLong(), anyLong());
 
         mockMvc.perform(delete(URL_RELATIONS)
                         .param("deleteRelationship", "2")
@@ -209,16 +213,15 @@ public class RelationshipsControllerIT {
                 .andExpect(redirectedUrl(RELATIONS_REDIRECT))
                 .andExpect(flash().attributeExists("successMessage"));
 
-        verify(relationshipService).deleteRelationship(userSession.id(), 2);
+        verify(relationshipService).deleteRelationship(anyLong(), anyLong());
     }
 
 
     @Test
     @DisplayName("DELETE /relations - échec (relation inexistante)")
     public void testDeleteRelationshipFailure() throws Exception {
-        UserSessionDTO userSession = new UserSessionDTO(1, "Jean", "jean@gmail.com");
 
-        doThrow(new RelationshipsException("La relation n'existe pas.")).when(relationshipService).deleteRelationship(userSession.id(), 2);
+        doThrow(new RelationshipsException("La relation n'existe pas.")).when(relationshipService).deleteRelationship(anyLong(), anyLong());
 
         mockMvc.perform(delete(URL_RELATIONS)
                         .param("deleteRelationship", "2")
@@ -227,6 +230,6 @@ public class RelationshipsControllerIT {
                 .andExpect(redirectedUrl(RELATIONS_REDIRECT))
                 .andExpect(flash().attributeExists("errorMessage"));
 
-        verify(relationshipService).deleteRelationship(userSession.id(), 2);
+        verify(relationshipService).deleteRelationship(anyLong(), anyLong());
     }
 }

@@ -2,6 +2,7 @@ package com.paymybuddy.it.service;
 
 import com.paymybuddy.dto.UserRelationshipProjection;
 import com.paymybuddy.dto.UserSessionDTO;
+import com.paymybuddy.exception.AddRelationshipsException;
 import com.paymybuddy.exception.RelationshipsException;
 import com.paymybuddy.model.Relationship;
 import com.paymybuddy.model.User;
@@ -58,21 +59,21 @@ public class RelationshipServiceIT {
     @DisplayName("Ajout d'une relation - échec (même utilisateur)")
     public void testAddRelationshipFailureSameUser() {
         otherUser.setId(userSession.id());
-        assertThrows(RelationshipsException.class, () -> relationshipService.addRelationship(userSession, otherUser));
+        assertThrows(AddRelationshipsException.class, () -> relationshipService.addRelationship(userSession, otherUser));
     }
 
     @Test
     @DisplayName("Ajout d'une relation - échec (déjà en attente)")
     public void testAddRelationshipFailureWaitingRelationshipAlreadyExists() {
         otherUser.setId(6);
-        assertThrows(RelationshipsException.class, () -> relationshipService.addRelationship(userSession, otherUser));
+        assertThrows(AddRelationshipsException.class, () -> relationshipService.addRelationship(userSession, otherUser));
     }
 
     @Test
     @DisplayName("Ajout d'une relation - échec (déjà en relation)")
     public void testAddRelationshipFailureRelationshipAlreadyExists() {
         otherUser.setId(2);
-        assertThrows(RelationshipsException.class, () -> relationshipService.addRelationship(userSession, otherUser));
+        assertThrows(AddRelationshipsException.class, () -> relationshipService.addRelationship(userSession, otherUser));
     }
 
     @Test
