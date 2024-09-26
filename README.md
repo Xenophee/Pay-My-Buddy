@@ -38,10 +38,10 @@ PayMyBuddy est une application web qui permet aux utilisateurs de gérer leurs r
     ```
 
 
-2. Créez une base de données PostgreSQL pay_my_buddy et y inséré dans l'ordre les scripts SQL suivants contenus dans le dossier `src/main/resources` :
-    - `bdd.sql`
-    - `data.sql`
-    - `triggers.sql`
+2. Créez une base de données PostgreSQL `pay_my_buddy` et y inséré dans l'ordre les scripts SQL suivants contenus dans le dossier `src/main/resources` :
+    - `bdd.sql` - Création des tables
+    - `data.sql` - Insertion des données
+    - `triggers.sql` - Création des triggers
 
    
 3. Configurez la base de données dans `src/main/resources/application.properties` :
