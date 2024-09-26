@@ -33,21 +33,21 @@ PayMyBuddy est une application web qui permet aux utilisateurs de gérer leurs r
 
 <br>
 
-1. Cloner le dépôt :
+1. Clonez le dépôt :
     ```sh
     git clone https://github.com/Xenophee/Pay-My-Buddy.git
     ```
 
 <br>
 
-2. Créer une base de données PostgreSQL pay_my_buddy et y inséré dans l'ordre les scripts SQL suivants contenus dans le dossier `src/main/resources` :
+2. Créez une base de données PostgreSQL pay_my_buddy et y inséré dans l'ordre les scripts SQL suivants contenus dans le dossier `src/main/resources` :
     - `bdd.sql`
     - `data.sql`
     - `triggers.sql`
 
 <br>
    
-3. Configurer la base de données dans `src/main/resources/application.properties` :
+3. Configurez la base de données dans `src/main/resources/application.properties` :
     ```properties
     spring.datasource.url=jdbc:postgresql://localhost:5432/pay_my_buddy?currentSchema=dev
     spring.datasource.username=yourusername
@@ -60,19 +60,20 @@ PayMyBuddy est une application web qui permet aux utilisateurs de gérer leurs r
 
 <br>
 
-5. Construire le projet :
+5. Construisez le projet :
     ```sh
     ./gradlew build
     ```
 <br>
 
-6. Lancer l'application :
+6. Lancez l'application :
     ```sh
     ./gradlew bootRun
     ```
 
 <br>
-7. Ouvrir un navigateur et accéder à l'URL `http://localhost:8080`.
+
+7. Ouvrez un navigateur et accéder à l'URL `http://localhost:8080`.
 
 <br>
 <br>
@@ -93,3 +94,4 @@ Retrouvez le rapport de test dans ` build/reports/tests/test/index.html.` et le 
 
 ## Structure de la base de données
 
+<img src="/resources/bdd.jpg" alt="Logo de l'application">
