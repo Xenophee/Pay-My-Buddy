@@ -8,7 +8,7 @@
 
 PayMyBuddy est une application web qui permet aux utilisateurs de gérer leurs relations et d'effectuer des paiements à leurs amis.
 
-
+Pour en savoir plus, vous pouvez consulter la page de mon [portfolio](https://perrine-dassonville.dev/portfolio/projet/pay-my-buddy) dédiée au projet.
 
 ## Fonctionnalités
 
